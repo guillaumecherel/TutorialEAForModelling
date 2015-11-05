@@ -1,3 +1,8 @@
+Calibration, validation et analyse de sensibilité de modèles de systèmes complexes avec OpenMOLE
+================================================================================================
+
+Guillaume Chérel, 2015-10-23
+
 Les modèles de systèmes complexes sont difficiles à explorer en simulation à cause du grand nombre de dimensions de l'espace de paramètres, de leur non linéarité et de leur stochasticité. Il nous faut trouver des moyens de résoudre les problèmes importants en modélisation, comme la calibration, l'analyse de sensibilité et la validation. Dans cette formation, nous allons voir comment les algorithmes évolutifs peuvent nous aider à résoudre ces problèmes pour des modèles de systèmes complexes, et comment les utiliser dans OpenMOLE.
 
 Fichiers scripts accompagnant ce document

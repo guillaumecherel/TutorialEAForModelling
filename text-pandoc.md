@@ -1,6 +1,5 @@
-% Calibration, validation et analyse de sensibilité de modèles de systèmes complexes avec OpenMOLE
-% Guillaume Chérel
-% 2015-10-23
+# Calibration, validation et analyse de sensibilité de modèles de systèmes complexes avec OpenMOLE
+Guillaume Chérel, 2015-10-23
 
 Les modèles de systèmes complexes sont difficiles à explorer en simulation à
 cause du grand nombre de dimensions de l'espace de paramètres, de leur non
