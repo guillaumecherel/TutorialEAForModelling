@@ -295,4 +295,8 @@ Conclusion
 
 Les méthodes présentées ici dessinent une approche de la modélisation informatique de systèmes complexes centrée sur les motifs que produisent les modèles en simulation. Lorsque l'on manque de données sur les mécanismes qui produisent un phénomène, par exemple parce qu'ils sont difficiles à observer directement, on peut en fournir une interprétation sous forme algorithmique. Cette interprétation est une proposition d'explication du phénomène. Les méthodes proposées ci-dessus sont autant de manières de vérifier que ces propositions sont capables de reproduire le phénomène qu'elles visent à expliquer, de mettre à l'épreuve leurs capacités prédictives et explicatives, et d'analyser le rôle des différents paramètres dans leur dynamique.
 
-[![http://creativecommons.org/licenses/by-sa/4.0/](licence-by-sa.svg)](http://creativecommons.org/licenses/by-sa/4.0/) *Ce texte par Guillaume Chérel est sous licence Creative Commons Attribution - Partage dans les Mêmes Conditions 4.0 International. Pour accéder à une copie de cette licence, merci de vous rendre à l'adresse suivante http://creativecommons.org/licenses/by-sa/4.0/ ou envoyez un courrier à Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.*
+![http://creativecommons.org/licenses/by-sa/4.0/](license-by-sa.svg)\](http://creativecommons.org/licenses/by-sa/4.0/)
+
+![http://creativecommons.org/licenses/by-sa/4.0/](license-by-sa.svg)\](http://creativecommons.org/licenses/by-sa/4.0/)
+
+*Ce texte par Guillaume Chérel est sous licence Creative Commons Attribution - Partage dans les Mêmes Conditions 4.0 International. Pour accéder à une copie de cette licence, merci de vous rendre à l'adresse suivante http://creativecommons.org/licenses/by-sa/4.0/ ou envoyez un courrier à Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.*
