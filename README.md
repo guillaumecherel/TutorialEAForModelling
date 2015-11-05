@@ -1,7 +1,6 @@
-% Calibration, validation et analyse de sensibilité de modèles de systèmes complexes avec OpenMOLE
-% Guillaume Chérel
-% 2015-10-23
-
+# Calibration, validation et analyse de sensibilité de modèles de systèmes complexes avec OpenMOLE
+by Guillaume Chérel
+2015-10-23
 
 Les modèles de systèmes complexes sont difficiles à explorer en simulation à
 cause du grand nombre de dimensions de l'espace de paramètres, de leur non
@@ -11,7 +10,7 @@ sensibilité et la validation. Dans cette formation, nous allons voir comment le
 algorithmes évolutifs peuvent nous aider à résoudre ces problèmes pour des
 modèles de systèmes complexes, et comment les utiliser dans OpenMOLE.
 
-# Fichiers scripts accompagnant ce document
+## Fichiers scripts accompagnant ce document
 
 Ce document fait partie d'un dépôt git qui contient aussi les fichiers scripts
 OpenMOLE pour exécuter les expériences décrites ci-dessous, et un fichier source
@@ -41,7 +40,7 @@ L'interpréteur haskell est lancé est il vous est possible d'appeler directemen
 des fonctions comme `plot_ants_calibrate`. Référez-vous au fichier <analyses/analyses.hs> pour connaître les
 fonctions disponibles.
 
-# Problèmes de modélisation que l'on cherche à traiter
+## Problèmes de modélisation que l'on cherche à traiter
 
 On se place dans le cas où l'on écrit un modèle pour essayer d'expliquer un
 phénomène observé. Par exemple, on souhaite expliquer la formation d'une file de
@@ -120,7 +119,7 @@ une autre approche qui permet d'évaluer la **robustesse d'un calibrage**,
 c'est-à-dire de voir si de faibles variations des paramètres d'un modèle calibré
 risque de produire d'important changements de comportements du modèle.
 
-# Algorithmes évolutifs
+## Algorithmes évolutifs
 
 Les algorithmes évolutifs sont à l'origine des méthodes d'optimisation qui
 s'inspirent de l'évolution et de la sélection naturelle. Le principe général est
@@ -137,7 +136,7 @@ problème donné en sélectionnant à chaque génération les individus qui rés
 le mieux le problème. On peut aussi rechercher de la diversité en sélectionnant
 les individus qui ont les comportements les plus différents les uns des autres.
 
-# Utiliser des algorithmes évolutifs avec des modèles
+## Utiliser des algorithmes évolutifs avec des modèles
 
 Dans le cadre de la modélisation de systèmes complexes, on cherche des valeurs
 de paramètres en fonction des comportements qu'ils induisent dans le modèle.
@@ -156,7 +155,7 @@ Pour résoudre les problèmes mentionnés ci-dessus, on va utiliser des algorith
   expérimentalement
 - rechercher des motifs différents
 
-# Calibrer un modèle pour reproduire des motifs attendus
+## Calibrer un modèle pour reproduire des motifs attendus
 
 *Script OpenMOLE associé: [ants_calibrate/ants_calibrate.oms](ants_calibrate/ants_calibrate.oms)*
 
@@ -330,7 +329,7 @@ diffusion|evaporation|foodDifference
 44.72|7.09|60.00
 79.39|5.60|59.50
 
-# Validation: Mettre un modèle à l'épreuve
+## Validation: Mettre un modèle à l'épreuve
 
 *Script OpenMOLE associé: [ants_pse/ants_pse.oms](ants_pse/ants_pse.oms)*
 
@@ -468,7 +467,7 @@ La figure suivante permet de comparer l'efficacité de PSE aux méthodes d'écha
 <img src="img/flockingmethodcomparisonsimple.png" width="350" />
 
 
-# Analyse de sensibilité: Profiles
+## Analyse de sensibilité: Profiles
 
 *Script OpenMOLE associé: [ants_profiles/ants_profiles.oms](ants_profiles/ants_profiles.oms)*
 
@@ -576,7 +575,7 @@ l'exploiter.
 
 ![](img/ants_evaporation_15.png)\ 
 
-# Analyse de sensibilité: Robustesse d'un calibrage
+## Analyse de sensibilité: Robustesse d'un calibrage
 
 La dernière méthode vise à évaluer la robustesse du calibrage d'un modèle. Un
 calibrage robuste signifie que de petites variations des valeurs de paramètres
@@ -604,7 +603,7 @@ est sensible à certains paramètres dans les intervalles considérés, et qu'il
 faut être prudent quant aux conclusions que l'on tire à partir du modèle
 calibré.
 
-# Conclusion
+## Conclusion
 
 Les méthodes présentées ici dessinent une approche de la modélisation
 informatique de systèmes complexes centrée sur les motifs que produisent les
