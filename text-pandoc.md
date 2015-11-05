@@ -615,9 +615,9 @@ propositions sont capables de reproduire le phénomène qu'elles visent à
 expliquer, de mettre à l'épreuve leurs capacités prédictives et explicatives, et
 d'analyser le rôle des différents paramètres dans leur dynamique. 
 
-![http://creativecommons.org/licenses/by-sa/4.0/](license-by-sa.png)](http://creativecommons.org/licenses/by-sa/4.0/) 
+[![http://creativecommons.org/licenses/by-sa/4.0/](license-by-sa.png)](http://creativecommons.org/licenses/by-sa/4.0/) 
 
-![http://creativecommons.org/licenses/by-sa/4.0/](license-by-sa.png)](http://creativecommons.org/licenses/by-sa/4.0/) 
+[![http://creativecommons.org/licenses/by-sa/4.0/](license-by-sa.png)](http://creativecommons.org/licenses/by-sa/4.0/) 
 
 *Ce texte par Guillaume Chérel est sous licence Creative Commons
 Attribution -  Partage dans les Mêmes Conditions 4.0 International. Pour accéder
