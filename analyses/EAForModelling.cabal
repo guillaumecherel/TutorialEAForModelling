@@ -4,7 +4,7 @@ synopsis:            Simple project template from stack
 description:         Please see README.md
 homepage:            http://github.com/guillaumecherel/EAForModelling
 license:             OtherLicense
-license-file:        ../LICENSE
+license-file:        ../LICENSE.md
 author:              Guillaume Chérel
 maintainer:          guillaume.cherel@iscpif.fr
 copyright:           2015 Guillaume Chérel
