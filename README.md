@@ -72,7 +72,7 @@ Calibrer un modèle pour reproduire des motifs attendus
 
 *Script OpenMOLE associé: [ants\_calibrate/ants\_calibrate.oms](ants_calibrate/ants_calibrate.oms)*
 
-*Article associé: Schmitt C, Rey-Coyrehourcq S, Reuillon R, Pumain D, 2015, "Half a billion simulations: evolutionary algorithms and distributed computing for calibrating the SimpopLocal geographical model" Environment and Planning B: Planning and Design, 42(2), 300-315. <http://www.envplan.com/abstract.cgi?id=b130064p>*
+*Article associé: Schmitt C, Rey-Coyrehourcq S, Reuillon R, Pumain D, 2015, "Half a billion simulations: evolutionary algorithms and distributed computing for calibrating the SimpopLocal geographical model" Environment and Planning B: Planning and Design, 42(2), 300-315. <https://hal.archives-ouvertes.fr/hal-01118918/document>*
 
 Voyons comment OpenMOLE peut nous aider à rechercher des valeurs de paramètres avec lesquels un modèle reproduit un motif que l'on cherche à expliquer.
 
