@@ -81,9 +81,7 @@ The method we now present aims at understanding better how the model works in fo
 
 We begin with establishing the profile for evaporation parameter with the following method. We would like to know if the model is able to reproduce the targeted pattern for different values of the evaporation rate. The range of this parameter is divided into `nX` intervals of equal size. For each value of the corresponding discretization, we use a genetic algorithm to search for values of other parameters that minimize the distance between experimental data and model outputs, as done before in the calibration section. In our case for the ant model, the optimization is done on the single remaining parameter, the diffusion parameter. The profile is obtained by running the genetic algorithm and ensuring to keep at least one best individual for each value of the discretization for the profiled parameter, whereas in the calibration case, best individuals where kept whatever the value of parameters. Once the profile obtained, we can do the same with the diffusion parameter.
 
-
-
-Pour établir un profil dans OpenMOLE pour un paramètre donné, on utilise la méthode d'évolution GenomeProfile:
+To establish a profile in OpenMOLE for a given parameter, we use the evolutive method GenomeProfile :
 
     val evolution =
        GenomeProfile (
@@ -98,9 +96,9 @@ Pour établir un profil dans OpenMOLE pour un paramètre donné, on utilise la m
          reevaluate = 0.01
        )
 
-Les arguments `inputs`, `termination`, `objective` et `reevaluate` ont la même signification que pour la calibration. L'argument `objective`, cette fois, ne prend pas une séquence mais un seul objectif, une valeur à minimiser. L'argument `x` spécifie le numéro du paramètre dont on veut établir le profile. Ce numéro commence à 0, et correspond à la position du paramètre dans la séquence donnée à `inputs`. Enfin, l'argument `nX` contrôle en combien d'intervalle on veut diviser l'intervalle du paramètre profilé.
+The arguments `inputs`, `termination`, `objective` and `reevaluate` have the same role as in calibration. The argument `objective` is this time not a sequence but a single objective to minimize. The argument `x` specifies the index of the parameter to be profiled, i.e. its position within the `inputs` sequence , indexing starting at 0. `nX` is as explained before the size of the discretization of its range.
 
-Comme pour chaque méthode d'évolution vue précédemment, il faut construire pour chaque profile le morceau de puzzle OpenMOLE qui va permettre de l'exécuter. On définit une fonction qui construit le puzzle associé au profil du paramètre `i`, puis on assemble tous les puzzles en un puzzle commun, comme ci-dessous:
+As for any evolutionary method, we need for each profile to create the OpenMOLE puzzle to execute it. We define a function returning the puzzle associated to a given parameter `parameter` and use it to assemble all pieces into a common puzzle, as follows :
 
     def profile(parameter: Int) = {
         val evolution =
@@ -127,17 +125,18 @@ Comme pour chaque méthode d'évolution vue précédemment, il faut construire p
     val profiles = (0 until 2).map(profile)
     profiles.map(firstCapsule -- _).reduce(_ + _)
 
-Voici les profiles obtenus pour chaque paramètre:
+
+We obtain the following profiles :
 
 ![](ants_profiles/profile_diffusion.png) 
 
 ![](ants_profiles/profile_evaporation.png) 
 
-Le modèle semble pouvoir reproduire assez fidèlement les mesures expérimentales indépendamment du taux de diffusion, sauf peut-être lorsqu'il descend en dessous de 10. On pourrait relancer un profile sur l'intervalle \[0;20\] pour en avoir une idée plus précise. En revanche, la reproduction des mesures expérimentales par le modèle est très sensible au paramètre d'évaporation. Le comportement du modèle s'en éloigne brusquement dès que le taux d'évaporation dépasse 10. Si on fait tourner le modèle avec un taux de diffusion de 21 et un taux d'évaporation de 15, on se rend compte que les fourmis ne peuvent plus construire un chemin de phéromone suffisamment stable entre le nid et la source de nourriture la plus éloignée, ce qui augmente considérablement le temps qu'il leur faut pour l'exploiter.
+Except for values below 10, the model is able to reproduce rather accurately experimental measures for any value of diffusion rate. A refined profile within the interval \[0;20\] may be useful to have a more precise idea. Concerning the evaporation parameter, model performance is on the contrary strongly sensitive, as values over 10 lead to a strong increase in minimal fit. When running the model with a diffusion rate of 21 and evaporation rate of 15, we observe that ants are not able to build a pheromone path enough stable between the nest and furthest food pile, what increases the time needed to exploit it in a considerable way.
 
 ![](img/ants_evaporation_15.png) 
 
-Analyse de sensibilité: Robustesse d'un calibrage
+Sensitivity analysis: Robustness of a calibration
 -------------------------------------------------
 
 La dernière méthode vise à évaluer la robustesse du calibrage d'un modèle. Un calibrage robuste signifie que de petites variations des valeurs de paramètres ne produisent pas de changement important du comportement du modèle en simulation. En conséquence, on peut prédire que tant que l'on restreint les valeurs de paramètres à des intervalles donnés, le modèle donnera toujours globalement le même comportement.
