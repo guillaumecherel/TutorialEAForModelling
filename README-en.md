@@ -79,14 +79,15 @@ Sensitivity analysis: Profiles
 
 The method we now present aims at understanding better how the model works in focusing on the impact of the different parameters of the model. In our Anthills example, we previously calibrated the model to enforce it to reproduce fake experimental measurements. We would like to know whether the model can reproduce this pattern for other parameter values. It is possible for instance, that a parameter is crucial and yet the model cannot reproduce the experimental measurements for a different value other than the one found with the calibration. It is also possible, on the contrary, that another parameter is not essential at all, that is, the model can reproduce the experimental measurements whatever its value. To establish the relevancy of our model parameter, we will set the parameters profiles for the model and for the targeted pattern, as follows:
 
-We begin with establishing the profile for evaporation parameter with the following method. We would like to know if the model is able to reproduce the targeted pattern for different values of the evaporation rate. The range of this parameter is divided into `nX` intervals of equal size. For each value of the corresponding discretization, we use a genetic algorithm to search for values of other parameters that minimize the distance between experimental data and model outputs, as done before in the calibration section. In our case for the ant model, the optimization is done on the single remaining parameter, the diffusion parameter. The profile is obtained by running the genetic algorithm and ensuring to keep at least one best individual for each value of the discretization for the profiled parameter, whereas in the calibration case, best individuals where kept whatever the value of parameters. Once the profile obtained, we can do the same with the diffusion parameter.
+We first establish the profil of the evaporation parameter. Here is the method: We would like to know whether the model can reproduce the targeted pattern for different evaporation rates. We divide the parameter interval into `nX` intervals of the same size, and we apply a genetic algorithm to search values for other parameters (the ants model only takes 2 parameters, so that the dispersal parameter is the only one to be varied), which, as previously for the calibration, minimize the distance between the measurements produced by the model and the ones observed experimentally. In the calibration case, we kept the best individals of the population whatever their parameter values. This time, we still keep the best individuals but we now guarantee to keep at least one for each interval division of the profiled parameter, that is the evaporation parameter. Then, we do the same operation with the dispersal parameter.
 
-To establish a profile in OpenMOLE for a given parameter, we use the evolutive method GenomeProfile :
+To set a profile for a given parameter in OpenMOLE, the GenomeProfile evolutionary method is used:
+
 
     val evolution =
        GenomeProfile (
          x = 0,
-         nX = 10,
+         nX = 20,
          inputs =
             Seq(
               diffusion -> (0.0, 99.0),
@@ -99,6 +100,7 @@ To establish a profile in OpenMOLE for a given parameter, we use the evolutive m
 The arguments `inputs`, `termination`, `objective` and `reevaluate` have the same role as in calibration. The argument `objective` is this time not a sequence but a single objective to minimize. The argument `x` specifies the index of the parameter to be profiled, i.e. its position within the `inputs` sequence , indexing starting at 0. `nX` is as explained before the size of the discretization of its range.
 
 As for any evolutionary method, we need for each profile to create the OpenMOLE puzzle to execute it. We define a function returning the puzzle associated to a given parameter `parameter` and use it to assemble all pieces into a common puzzle, as follows :
+
 
     def profile(parameter: Int) = {
         val evolution =
@@ -125,7 +127,6 @@ As for any evolutionary method, we need for each profile to create the OpenMOLE 
     val profiles = (0 until 2).map(profile)
     profiles.map(firstCapsule -- _).reduce(_ + _)
 
-
 We obtain the following profiles :
 
 ![](ants_profiles/profile_diffusion.png) 
@@ -134,6 +135,7 @@ We obtain the following profiles :
 
 Except for values below 10, the model is able to reproduce rather accurately experimental measures for any value of diffusion rate. A refined profile within the interval \[0;20\] may be useful to have a more precise idea. Concerning the evaporation parameter, model performance is on the contrary strongly sensitive, as values over 10 lead to a strong increase in minimal fit. When running the model with a diffusion rate of 21 and evaporation rate of 15, we observe that ants are not able to build a pheromone path enough stable between the nest and furthest food pile, what increases the time needed to exploit it in a considerable way.
 
+
 ![](img/ants_evaporation_15.png) 
 
 Sensitivity analysis: Robustness of a calibration
@@ -141,9 +143,7 @@ Sensitivity analysis: Robustness of a calibration
 
 The last method presented here aims to evaluate the robustness of a model calibration. We mean by a robust calibration that small variations of optimal parameters do not strongly change model behavior. In other words there should be no discontinuity in model indicators in a reasonable region around the optimal point. As a consequence, if parameter values are restricted to given regions of the parameter space, we expect the model to have roughly the same behavior within each region, especially within the region around the calibrated point.
 
-
-
-Supposons par exemple que l'on puisse mesurer les valeurs de paramètres directement dans les données. Admettons que l'on puisse établir un intervalle de confiance pour chaque paramètre. On veut s'assurer que, tant que les valeurs de paramètres restent dans leur intervalle respectif, le modèle conserve toujours globalement le même comportement. Cette étape est importante lorsque l'on cherche à tirer des prédictions d'un modèle. Si le modèle produits des comportements très variés dans les intervalles considérés, alors il faut trouver quels paramètres sont responsables de cette variation et tenter de les mesurer avec plus de précision pour réduire l'intervalle de confiance.
+Let's suppose for instance, that we can measure the parameter values directly in the data. Let's also admit that we can establish a confidence interval for each parameter. We want to be sure that, as long as the parameter values remain in their respective intervals, the model keep the same behavior. This step is important when we try to use the model as a predictable model. If the model produces behaviors very different in the considered intervals, the parameters responsible for this variation has to be found and has to be measured with more accuracy to reduce the confidence interval.
 
 This issue can be tackled using the PSE algorithm again, by running the above example with the desired confidence intervals for each parameter. The algorithm will aim to diversity of outputs within these interval, and the unveiling of significantly different patterns will imply that the model is sensitive to some parameters within the considered region. One must then either narrow parameters bounds again, or stay cautious on conclusions obtained through the calibrated model.
 
@@ -155,4 +155,4 @@ The methods developed here are insights into a pattern-oriented of complex syste
 
 [![http://creativecommons.org/licenses/by-sa/4.0/](license-by-sa.png)](http://creativecommons.org/licenses/by-sa/4.0/)
 
-*This text by Guillaume Chérel is under a Creative Commons Attribution - Shar alike 4.0 International license. To obtain a copy of this license, please go to http://creativecommons.org/licenses/by-sa/4.0/ or send an inquiry to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.*
+*This text by Guillaume Chérel is under a Creative Commons Attribution - Share alike 4.0 International license. To obtain a copy of this license, please visit http://creativecommons.org/licenses/by-sa/4.0/ or send an inquiry to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.*

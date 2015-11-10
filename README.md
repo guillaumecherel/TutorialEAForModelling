@@ -232,7 +232,7 @@ Pour établir un profil dans OpenMOLE pour un paramètre donné, on utilise la m
     val evolution =
        GenomeProfile (
          x = 0,
-         nX = 10,
+         nX = 20,
          inputs = 
             Seq(
               diffusion -> (0.0, 99.0), 
@@ -286,9 +286,9 @@ Analyse de sensibilité: Robustesse d'un calibrage
 
 La dernière méthode vise à évaluer la robustesse du calibrage d'un modèle. Un calibrage robuste signifie que de petites variations des valeurs de paramètres ne produisent pas de changement important du comportement du modèle en simulation. En conséquence, on peut prédire que tant que l'on restreint les valeurs de paramètres à des intervalles donnés, le modèle donnera toujours globalement le même comportement.
 
-Supposons par exemple que l'on puisse mesurer les valeurs de paramètres directement dans les données. Admettons que l'on puisse établir un intervalle de confiance pour chaque paramètre. On veut s'assurer que, tant que les valeurs de paramètres restent dans leur intervalle respectif, le modèle conserve toujours globalement le même comportement. Cette étape est importante lorsque l'on cherche à tirer des prédictions d'un modèle. Si le modèle produits des comportements très variés dans les intervalles considérés, alors il faut trouver quels paramètres sont responsables de cette variation et tenter de les mesurer avec plus de précision pour réduire l'intervalle de confiance.
+Supposons par exemple que l'on puisse mesurer les valeurs de paramètres directement dans les données. Admettons que l'on puisse établir un intervalle de confiance pour chaque paramètre. On veut s'assurer que, tant que les valeurs de paramètres restent dans leur intervalle respectif, le modèle conserve toujours globalement le même comportement. Cette étape est importante lorsque l'on cherche à tirer des prédictions d'un modèle. Si le modèle produit des comportements très variés dans les intervalles considérés, alors il faut trouver quels paramètres sont responsables de cette variation et tenter de les mesurer avec plus de précision pour réduire l'intervalle de confiance.
 
-On peut à nouveau utiliser PSE pour répondre à cette question. Il suffit de reprendre l'exemple ci-dessus en changeant les intervalle relatif à chaque paramètre pour les remplacer par les intervalles de confiance désirés. L'algorithme va alors chercher les différents motifs que peut générer le modèle dans cet intervalle. S'il découvre des motifs différents, c'est que le modèle est sensible à certains paramètres dans les intervalles considérés, et qu'il faut être prudent quant aux conclusions que l'on tire à partir du modèle calibré.
+On peut à nouveau utiliser PSE pour répondre à cette question. Il suffit de reprendre l'exemple ci-dessus en changeant les intervalles relatifs à chaque paramètre pour les remplacer par les intervalles de confiance désirés. L'algorithme va alors chercher les différents motifs que peut générer le modèle dans cet intervalle. S'il découvre des motifs différents, c'est que le modèle est sensible à certains paramètres dans les intervalles considérés, et qu'il faut être prudent quant aux conclusions que l'on tire à partir du modèle calibré.
 
 Conclusion
 ----------
