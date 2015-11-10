@@ -46,16 +46,17 @@ Here is the OpenMOLE code used for out entomological example:
           termination = 1000000
         )
 
-<!---
-Au fur et à mesure de l'exploration, de nouveaux motifs sont découverts. La figure suivante donne le nombre de motifs connus (que l'on calcule par le nombre de cellules dont le compteur est supérieur ou égal à 1) en fonction du nombre d'évaluations.
+As the exploration progresses new patterns are discovered. The following figure gives the number of known patterns (the number of cells with a counter value greater than 0) with respect to the number of evaluations.
 
 ![](ants_pse/volumeDiscovered.png) 
 
-Lorsque ce nombre se stabilise, c'est que PSE ne fait plus de nouvelles découvertes. Il faut être prudent sur la manière d'interpréter cela. L'absence de nouvelles découvertes peut signifier que tous les motifs que peut produire le modèle ont été découverts, mais il est aussi possible que d'autres motifs existent mais que PSE n'arrive pas à les atteindre.
+When this number stabilizes, PSE does not make new discories anymore. One has to be careful when interpreting this. Indeed, the absence of new discoveries can mean that all the patterns that the model can produce have been discovered, but it is also possible that other patterns exist but that PSE could not reach them.
 
-La figure suivante montre les motifs découverts par PSE lorsque nous avons interrompu l'exploration.
+The following figure shows the patterns discovered by PSE when we interrupted the exploration.
 
 ![](ants_pse/patterns.png) 
+
+<!---
 
 La première observation que l'on peut faire est que dans tous les motifs découverts, la source de nourriture la plus proche a été épuisée avant la source de nourriture la plus éloignée. D'autre part, il semble y avoir une borne minimum et maximum pour le temps au cours duquel la première source de nourriture est consommée.
 
