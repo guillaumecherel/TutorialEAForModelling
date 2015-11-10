@@ -33,13 +33,13 @@ Here is the OpenMOLE code used for out entomological example:
 
     val evolution =
         BehaviourSearch (
-          inputs = 
+          inputs =
             Seq(
-              diffusion -> (0.0, 99.0), 
+              diffusion -> (0.0, 99.0),
               evaporation -> (0.0, 99.0)),
-          observables = 
+          observables =
             Seq(
-              medFood1, 
+              medFood1,
               medFood3),
           gridSize = Seq(40, 40),
           reevaluate = 0.01,
@@ -50,7 +50,7 @@ As the exploration progresses new patterns are discovered. The following figure 
 
 ![](ants_pse/volumeDiscovered.png) 
 
-When this number stabilizes, PSE does not make new discories anymore. One has to be careful when interpreting this. Indeed, the absence of new discoveries can mean that all the patterns that the model can produce have been discovered, but it is also possible that other patterns exist but that PSE could not reach them.
+When this number stabilizes, PSE does not make new discoveries anymore. One has to be careful when interpreting this. Indeed, the absence of new discoveries can mean that all the patterns that the model can produce have been discovered, but it is also possible that other patterns exist but that PSE could not reach them.
 
 The following figure shows the patterns discovered by PSE when we interrupted the exploration.
 
@@ -58,13 +58,13 @@ The following figure shows the patterns discovered by PSE when we interrupted th
 
 The first observation that can be made is that all patterns have indeed been discovered: the closest food source has been drained before the furthest one. Besides, there seems to be minimum and maximum bounds for the time during which the first food source is consumed.
 
-These three observation give us as many starting points for further reflections on the collective behavior of ants. For instance, is the exploration of the closests food sources first systematic? Could there be ant species that would explore further food sources than others first? If we found such a species, we would have to wonder which mecanisms make it possible and revise the model to take them into account. This illustrates how the discovery of the different behaviors the model is able to produce can lead us to formulate new hypotheses of the system under study, to test them and to revise the model, thus enhancing our understanding of the phenomenon.
+These three observation give us as many starting points for further reflections on the collective behavior of ants. For instance, is the exploration of the closest food sources first systematic? Could there be ant species that would explore further food sources than others first? If we found such a species, we would have to wonder which mechanisms make it possible and revise the model to take them into account. This illustrates how the discovery of the different behaviors the model is able to produce can lead us to formulate new hypotheses of the system under study, to test them and to revise the model, thus enhancing our understanding of the phenomenon.
 
 Why not simply sample the parameter space in order to know the different potential behaviors of the model using well known sampling methods such as LHS? In the context of an experiment using a collective motion model with 5 parameters, we compared the performances of PSE and 3 samplings in the parameter space: LHS, Sobol and a regular grid. The results presented in the next two figures show that the sampling of the parameter space, even with good coverage properties such as LHS and Sobol, can miss several patterns. Adaptative methods, such as PSE, that orient the search according to the discoveries made along the way, are preferable. The following figure shows the behaviors discovered by the proposed method (PSE for Pattern Space Exploration), by a LHS sampling and a regular grid.
 
 <img src="img/flockingpatternsallmethods.png" width="600" />
 
-Each point represents a discovered behavior of the model. The behaviors are described in two dimensions: the averange velocity of the particles and their relative diffusion (towards 1, they move away from each other, at 0, they do not move relatively to each other, towards -1, they get closer to each other).
+Each point represents a discovered behavior of the model. The behaviors are described in two dimensions: the average velocity of the particles and their relative diffusion (towards 1, they move away from each other, at 0, they do not move relatively to each other, towards -1, they get closer to each other).
 
 The following figure allows to compare PSE to other sampling methods in terms of efficiency.
 
@@ -77,9 +77,11 @@ Sensitivity analysis: Profiles
 
 *Article: Reuillon R., Schmitt C., De Aldama R., Mouret J.-B., 2015, "A New Method to Evaluate Simulation Models: The Calibration Profile (CP) Algorithm", JASSS : Journal of Artificial Societies and Social Simulation, Vol. 18, Issue 1, <http://jasss.soc.surrey.ac.uk/18/1/12.html>*
 
-The method we now present aims at understanding better how the model works in focusing on the impact of the different parameters of the model. In our Anthills example, we previously calibrated the model to enforce it to reproduce fake experimental measurements. We would like to knowe whether the model can reproduce this pattern for other parameter values. It is possible for instance, that a parameter is crucial and yet the model cannot reproduce the experimental measurements for a different value other than the one found with the calibration. It is also possible, on the contrary, that another parameter is not essential at all, that is, the model can reproduce the experimental measurements whatever its value. To establish the relevancy of our model parameter, we will set the parameters profiles for the model and for the targeted pattern, as follows:
+The method we now present aims at understanding better how the model works in focusing on the impact of the different parameters of the model. In our Anthills example, we previously calibrated the model to enforce it to reproduce fake experimental measurements. We would like to know whether the model can reproduce this pattern for other parameter values. It is possible for instance, that a parameter is crucial and yet the model cannot reproduce the experimental measurements for a different value other than the one found with the calibration. It is also possible, on the contrary, that another parameter is not essential at all, that is, the model can reproduce the experimental measurements whatever its value. To establish the relevancy of our model parameter, we will set the parameters profiles for the model and for the targeted pattern, as follows:
 
-Commençons par établir le profil du paramètre d'évaporation. La méthode est la suivante. On voudrait savoir si le modèle peut reproduire le motif visé pour différents taux d'évaporation. On divise l'intervalle du paramètre en `nX` intervalles de même taille, et on utilise un algorithme génétique pour rechercher des valeurs des autres paramètres (dans le modèle de fourmi il n'y en a que deux, c'est donc seulement le paramètre de dispersion qui va varier) qui, comme précédemment pour la calibration, minimisent la distance entre les mesures produites par le modèle en simulation et celles observées expérimentalement. Dans le cas de la calibration, on gardait les meilleurs individus de la population quelles que soient leurs valeurs de paramètre. Cette fois, on garde aussi les meilleurs individus, mais en s'assurant d'en garder au moins un pour chaque division de l'intervalle du paramètre dont on établit le profile, c'est-à-dire le taux d'évaporation. Une fois fait, on recommence pour l'autre paramètre, celui de dispersion.
+We begin with establishing the profile for evaporation parameter with the following method. We would like to know if the model is able to reproduce the targeted pattern for different values of the evaporation rate. The range of this parameter is divided into `nX` intervals of equal size. For each value of the corresponding discretization, we use a genetic algorithm to search for values of other parameters that minimize the distance between experimental data and model outputs, as done before in the calibration section. In our case for the ant model, the optimization is done on the single remaining parameter, the diffusion parameter. The profile is obtained by running the genetic algorithm and ensuring to keep at least one best individual for each value of the discretization for the profiled parameter, whereas in the calibration case, best individuals where kept whatever the value of parameters. Once the profile obtained, we can do the same with the diffusion parameter.
+
+
 
 Pour établir un profil dans OpenMOLE pour un paramètre donné, on utilise la méthode d'évolution GenomeProfile:
 
@@ -87,9 +89,9 @@ Pour établir un profil dans OpenMOLE pour un paramètre donné, on utilise la m
        GenomeProfile (
          x = 0,
          nX = 10,
-         inputs = 
+         inputs =
             Seq(
-              diffusion -> (0.0, 99.0), 
+              diffusion -> (0.0, 99.0),
               evaporation -> (0.0, 99.0)),
          termination = 100 hours,
          objective = aggregatedFitness,
@@ -105,9 +107,9 @@ Comme pour chaque méthode d'évolution vue précédemment, il faut construire p
            GenomeProfile (
              x = parameter,
              nX = 20,
-             inputs = 
+             inputs =
                 Seq(
-                  diffusion -> (0.0, 99.0), 
+                  diffusion -> (0.0, 99.0),
                   evaporation -> (0.0, 99.0)),
              termination = 100 hours,
              objective = aggregatedFitness,
