@@ -9,74 +9,73 @@ Translated from french by Guillaume Chérel, Mathieu Leclaire, Juste Raimbault, 
 This text is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/.
 
 
-
-Calibrer un modèle pour reproduire des motifs attendus
+Calibrate a model to reproduce expected patterns
 ------------------------------------------------------
 
-*Script OpenMOLE associé: [ants\_calibrate/ants\_calibrate.oms](ants_calibrate/ants_calibrate.oms)*
+*Corresponding OpenMOLE script: [ants\_calibrate/ants\_calibrate.oms](ants_calibrate/ants_calibrate.oms)*
 
-*Article associé: Schmitt C, Rey-Coyrehourcq S, Reuillon R, Pumain D, 2015, "Half a billion simulations: evolutionary algorithms and distributed computing for calibrating the SimpopLocal geographical model" Environment and Planning B: Planning and Design, 42(2), 300-315. <https://hal.archives-ouvertes.fr/hal-01118918/document>*
+*Corresponding paper: Schmitt C, Rey-Coyrehourcq S, Reuillon R, Pumain D, 2015, "Half a billion simulations: evolutionary algorithms and distributed computing for calibrating the SimpopLocal geographical model" Environment and Planning B: Planning and Design, 42(2), 300-315. <https://hal.archives-ouvertes.fr/hal-01118918/document>*
 
-Voyons comment OpenMOLE peut nous aider à rechercher des valeurs de paramètres avec lesquels un modèle reproduit un motif que l'on cherche à expliquer.
+We will see now how OpenMOLE can help finding parameter values through which a model reproduces a given pattern we want to explain.
 
-Reprenons l'exemple des fourmis. Imaginons que l'on ait fait une expérience où l'on a placé trois sources de nourriture autour d'une fourmilière, et que l'on ait mesuré le temps passé pour que chaque source soit entièrement épuisée. On a mesuré que la première source a été épuisée en 250 secondes, la deuxième en 400 secondes et la troisième en 800 secondes. Si notre modèle est juste, il devrait pouvoir reproduire ces mesures. Peut-on trouver des valeurs de paramètres pour lesquels il les reproduit?
+Coming back to the ants example, we can imagine a real world experiment where three stacks of food are set around the anthill, allowing to measure the time needed for each stack to be emptied, respectively 250, 400 and 800 seconds. If the model is accurate, it should be able to reproduce these measures. Are we able to find some parameter values reproducing these ?
 
-On peut traduire cette question en un problème d'optimisation. Il s'agit de rechercher des valeurs de paramètres qui minimisent la différence entre les temps mesurés dans l'expérience et les temps mesurés en simulation, donné par l'expression:
+This question can be understood as an optimization problem, where we search for parameter values minimizing the difference between experimental measured times and simulated times, given by:
 
     |250 - simuFood1| + |400 - simuFood2| + |800 - simuFood3|
 
-Pour répondre à cette question avec OpenMOLE, il faut écrire un workflow qui décrit: 1. comment simuler le modèle et calculer la distance entre la simulation et les mesures issues de l'expérience, 2. comment minimiser cette distance, 3. comment distribuer les calculs en parallèle.
+To answer this question with OpenMOLE, we need a workflow that describes: 1. how to simulate the model and compute the distance between simulation and experimental measures, 2. how to minimize this distance, 3. how to parallelize the computations.
 
-Le premier point relève de notions de base d'OpenMOLE dans lesquels nous ne rentrerons pas ici en détails. Admettons simplement que nous avons une tâche replicateModel qui exécute 10 réplications du modèle avec des valeurs de paramètres données, et qui calcule la distance médiane entre les résultats des simulations et des mesures expérimentales (basée sur l'expression ci-dessus), et associe au prototype foodTimesDifference.
+The first step corresponds to OpenMOLE basics that will not be detailed here. We simply assume that we have defined a `replicateModel` task that executes 10 replications of the model with given parameter values, computes the median distance between simulation outputs and experimental measures (following the above expression) and associates it to the `foodTimesDifference` prototype.
 
-Pour répondre au second point, OpenMOLE nous permet d'utiliser l'algorithme NSGA2, qui est un algorithme génétique d'optimisation multi-critères. Dans OpenMOLE, NSGA2 prend les paramètres suivants: - mu: un nombre d'individus à générer aléatoirement pour initialiser la population, - inputs: une séquence de paramètres du modèle pour lesquels on cherche des valeurs, et leurs bornes minimum et maximum, - objectives: une séquence de variables à minimiser, - reevaluate: une probabilité, lorsqu'on génère un nouvel individu, d'en prendre un tel quel dans la population précédente pour qu'il soit réévalué, - et un critère de terminaison.
+The second step is tackled using the NSGA2 algorithm, a multi-criteria optimization genetic algorithm implemented in OpenMOLE. It takes the following parameters as inputs: - mu: a number of individuals to be randomly generated in order to initialize the population, -inputs: a sequence of model parameters on which the optimization is done, with the associated lower and upper bound, -objectives: a sequence of variables to be minimized, - reevaluate: the probability to pick a new individual from the existing population in order to reevaluate it, - a termination criterion.
 
-Voici le code OpenMOLE associé:
+The corresponding OpenMOLE code is the following:
 
     val evolution =
       NSGA2(
         mu = 200,
         inputs = Seq(diffusion -> (0.0, 99.0), evaporation -> (0.0, 99.0)),
-        objectives = Seq(foodTimesDifference), //ici, il n'y a qu'un objectif
+        objectives = Seq(foodTimesDifference), //we have a single objective here
         reevaluate = 0.01,
         termination = 1000000
       )
 
-La variable `foodTimesDifference` est un prototype du workflow d'OpenMOLE qui représente la somme des différences absolues entre les temps mesurés par expérience et les temps mesurés en simulation, comme dans l'expression ci-dessus. Comme le modèle est stochastique, cette valeur est définie dans le workflow comme la médiane de plusieurs réplications du modèle avec les mêmes valeurs de paramètres. L'algorithme NSGA2 va chercher à minimiser cette valeur.
+The variable `foodTimesDifference` is a prototype in the OpenMOLE workflow, representing the sum of absolute differences between experimental time and simulated times, as given above. As we are dealing with a stochastic model, its value is defined in the workflow as the median on some model replications with the same parameter values. The NSGA2 algorithm will aim to minimize this value.
 
-Le paramètre `reevaluate` est utile lorsque le modèle est stochastique. Par chance, il se peut qu'une simulation ou un ensemble de réplications donne un résultat très bon mais peu reproductible. On préfère garder les individus qui donnent de bons résultats en moyenne. Lorsqu'un individu est très bon, il a une plus grande chance d'être sélectionné pour être réévalué. Si sa performance était un coup de chance, il est probable qu'une nouvelle évaluation donne un moins bonne performance, et donc que l'individu soit abandonné au profit d'autres individus plus robustes.
+The parameter `reevaluate` is useful when we have a stochastic model. By chance, a simulation or a set of replications can lead to a satisfying but not reproducible result. It is better to keep individuals leading to good average results. If an individual has a high fitness, it will have more chance to be selected for reevaluation. If its performance was due to luck, it will probably produce a mean performance and the individual will be abandoned for more robust individuals.
 
-Enfin, il faut répondre au troisième point et décrire comment les calculs sont distribués. Il y a plusieurs approches possibles dans OpenMOLE: générationnelle, steady state et en steady state en îlots.
+Finally, we must answer to the third step and describe how computation is distributed. OpenMOLE offers several approaches to tackle this question for evolutionary algorithms: generational, steady state and island steady state.
 
-La première consiste à générer λ individus à chaque génération et à tous les évaluer en distribuant leurs évaluations sur les différentes unités de calcul disponibles. Pour continuer l'étape suivante, il faut attendre que tous les individus aient été évalués. Si certains prennent plus de temps que d'autres, on peut se retrouver dans des cas où on doit attendre que les plus long se terminent avant de continuer, alors que la plupart des unités de calcul sont inoccupées. C'est une perte de temps de calcul.
+The first one resides in generating λ individuals at each generation and to evaluate each of them by distributing their evaluation of the different available computing units. To continue to next generation, the algorithm must wait for all individuals to have been evaluated, what can lead to a significant slow-down due to resting computing units waiting for slowest individuals to terminate, in case of a string disparity in computation time among individuals.
 
-La seconde approche consiste à commencer avec μ individus et à en lancer au maximum autant qu'il y a d'unités de calcul disponible. Dès qu'une évaluation se termine, on l'intègre à la population et on en génère un nouveau que l'on relance immédiatement sur l'unité de calcul qui vient de se libérer. Cette méthode utilise continuellement les unités de calculs. C'est l'approche recommandée pour lancer une évolution sur un cluster.
+The second approach begins with μ individuals and launches a maximal number of evaluations as long as there are available computing units. When an evaluation is over, it is integrated in the population and a new individual is generated and evaluated on the computing unit that has just been freed. This method uses all computing units continuously and is recommended in a cluster environment.
 
-La troisième approche, island steady state, convient particulièrement au calcul sur grille où l'accès aux noeuds de calculs à un coût important (par exemple à cause du temps d'attente pour qu'un noeud se libère). Au lieu de lancer seulement l'évaluation des individus sur les unités de calcul distribuées, elle consiste à lancer des algorithmes évolutifs entiers pour une période de temps fixé (par exemple, 1h). Lorsqu'une évolution se termine, sa population finale est intégrée à la population globale, puis une nouvelle population est générée et sert de population de départ à une nouvelle évolution distribuée.
+The third approach, island steady state, is particularly adapted to grid computing for which access to computatino nodes has a consequent entry cost (for example because of the waiting time for a node to be freed). Instead of launching only the evaluation of indivuduals on the distributed computing units, it relies on launching entires evolutionary algorithms for a fixed time period (for example 1h). When an evolution is over, its final population is integrated into the global population, what allows to generate a new population that is a basis for a new distributed evolution.
 
-Pour notre exemple, voyons comment utiliser l'approche steady state simple:
+In our example, we propose to study the simple steady state approach:
 
     val (puzzle, ga) = SteadyGA(evolution)(replicateModel, 40)
 
-On passe à `SteadyGA` la méthode d'évolution que l'on a décrite plus haut, et la tâche à exécuter. Le dernier paramètre correspond au nombre d'évaluations qui sont exécutées en parallèle. SteadyGA lance de nouvelles évaluations tant que le nombre d'évaluations en cours d'exécution est inférieur à cet entier.
+We give to `SteadyGA` the evolution method that was described above and the task to be executed. The last parameter corresponds to the number of evaluations executed in parallel. `SteadyGA` launches new evaluations as long as current evaluations are below this value.
 
-`SteadyGA` renvoi deux variables que l'on a appelé dans cet exemple `puzzle` et `ga`. Le second contient les informations sur l'évolution en cours. Elle permet de définir des hooks pour enregistrer la population en cours dans des fichiers csv ou d'afficher la génération en cours. La ligne suivante enregistre la population correspondant à chaque génération dans un fichier `results/population#.csv`, ou `#` est replacé par le numéro de la génération:
+`SteadyGA` returns two variables called in our example `puzzle` and `ga`. The second contains informations on the current evolution and allows to define hooks that save the current population into csv file or to print the current generation. The following code saves the population corresponding to each generation into a file `results/population#.csv`, where `#` is replaced by the number of the generation:
 
     val savePopulationHook = SavePopulationHook(ga, workDirectory / "results")
 
-La ligne suivante affiche dans la console le numéro de la génération:
+and this line displays in console the generation number:
 
     val display = DisplayHook("Generation ${" + ga.generation.name + "}")
 
-Dans OpenMOLE, un puzzle est un ensemble de tâches et de transitions qui décrivent un morceau de workflow. La variable `puzzle` contient le puzzle OpenMOLE qui déroule l'évolution. On utilise cette variable pour construire le puzzle final qui va être exécuté, et qui contient les hooks que l'on vient de définir:
+In OpenMOLE, a puzzle is a set of tasks and transitions that describe a part of a workflow. The variable `puzzle` contains the OpenMOLE puzzle that does the evolution. We use this variable to construct the final puzzle that will be executed and that contains the hooks defined just before:
 
     (puzzle hook savePopulationHook hook display)
 
-Lorsqu'on lance le workflow OpenMOLE, l'évolution va progressivement produire les valeurs de paramètres avec lesquelles le modèle reproduit les mesures expérimentales. Voici l'évolution de la distance entre les simulations et les mesures expérimentales au fil des évaluations successives.
+When we launch the OpenMOLE workflow, the evolution will progressively produce parameter values having the best fitness, i.e. with which the model is closest to experimental values. We show the evolution of the distance between simulation and experimental measures between successive evaluations in the following figure:
 
 ![](ants_calibrate/fitnessVSEval.png) 
 
-Lorsque l'évolution se stabilise, on peut conclure que l'on a trouvé ou non des valeurs de paramètres avec lesquelles le modèle reproduit les données, et si oui, on peut conclure que le modèle est une explication possible du phénomène observé.
+When the evolution is stabilized, we can conclude wether we have found parameter values with which the model reproduce experimental data. If it is the case, we can conclude that the model is a possible explanation to the observed phenomenon.
 
 |  diffusion|  evaporation|  foodDifference|
 |----------:|------------:|---------------:|
@@ -100,6 +99,8 @@ Lorsque l'évolution se stabilise, on peut conclure que l'on a trouvé ou non de
 |      68.10|         5.42|           58.50|
 |      44.72|         7.09|           60.00|
 |      79.39|         5.60|           59.50|
+
+
 
 
 Validation: Putting a model to the test
