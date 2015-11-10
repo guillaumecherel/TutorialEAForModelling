@@ -2,11 +2,105 @@
 
 Guillaume Chérel, 2015-10-23
 
-Translated from the french by Guillaume Chérel, Mathieu Leclaire, Juste Raimbault, Julien Perret.
+Translated from french by Guillaume Chérel, Mathieu Leclaire, Juste Raimbault, Julien Perret.
 
 [![http://creativecommons.org/licenses/by-sa/4.0/](license-by-sa.png)](http://creativecommons.org/licenses/by-sa/4.0/) Guillaume Chérel, 2015
 
 This text is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/.
+
+
+
+Calibrer un modèle pour reproduire des motifs attendus
+------------------------------------------------------
+
+*Script OpenMOLE associé: [ants\_calibrate/ants\_calibrate.oms](ants_calibrate/ants_calibrate.oms)*
+
+*Article associé: Schmitt C, Rey-Coyrehourcq S, Reuillon R, Pumain D, 2015, "Half a billion simulations: evolutionary algorithms and distributed computing for calibrating the SimpopLocal geographical model" Environment and Planning B: Planning and Design, 42(2), 300-315. <https://hal.archives-ouvertes.fr/hal-01118918/document>*
+
+Voyons comment OpenMOLE peut nous aider à rechercher des valeurs de paramètres avec lesquels un modèle reproduit un motif que l'on cherche à expliquer.
+
+Reprenons l'exemple des fourmis. Imaginons que l'on ait fait une expérience où l'on a placé trois sources de nourriture autour d'une fourmilière, et que l'on ait mesuré le temps passé pour que chaque source soit entièrement épuisée. On a mesuré que la première source a été épuisée en 250 secondes, la deuxième en 400 secondes et la troisième en 800 secondes. Si notre modèle est juste, il devrait pouvoir reproduire ces mesures. Peut-on trouver des valeurs de paramètres pour lesquels il les reproduit?
+
+On peut traduire cette question en un problème d'optimisation. Il s'agit de rechercher des valeurs de paramètres qui minimisent la différence entre les temps mesurés dans l'expérience et les temps mesurés en simulation, donné par l'expression:
+
+    |250 - simuFood1| + |400 - simuFood2| + |800 - simuFood3|
+
+Pour répondre à cette question avec OpenMOLE, il faut écrire un workflow qui décrit: 1. comment simuler le modèle et calculer la distance entre la simulation et les mesures issues de l'expérience, 2. comment minimiser cette distance, 3. comment distribuer les calculs en parallèle.
+
+Le premier point relève de notions de base d'OpenMOLE dans lesquels nous ne rentrerons pas ici en détails. Admettons simplement que nous avons une tâche replicateModel qui exécute 10 réplications du modèle avec des valeurs de paramètres données, et qui calcule la distance médiane entre les résultats des simulations et des mesures expérimentales (basée sur l'expression ci-dessus), et associe au prototype foodTimesDifference.
+
+Pour répondre au second point, OpenMOLE nous permet d'utiliser l'algorithme NSGA2, qui est un algorithme génétique d'optimisation multi-critères. Dans OpenMOLE, NSGA2 prend les paramètres suivants: - mu: un nombre d'individus à générer aléatoirement pour initialiser la population, - inputs: une séquence de paramètres du modèle pour lesquels on cherche des valeurs, et leurs bornes minimum et maximum, - objectives: une séquence de variables à minimiser, - reevaluate: une probabilité, lorsqu'on génère un nouvel individu, d'en prendre un tel quel dans la population précédente pour qu'il soit réévalué, - et un critère de terminaison.
+
+Voici le code OpenMOLE associé:
+
+    val evolution =
+      NSGA2(
+        mu = 200,
+        inputs = Seq(diffusion -> (0.0, 99.0), evaporation -> (0.0, 99.0)),
+        objectives = Seq(foodTimesDifference), //ici, il n'y a qu'un objectif
+        reevaluate = 0.01,
+        termination = 1000000
+      )
+
+La variable `foodTimesDifference` est un prototype du workflow d'OpenMOLE qui représente la somme des différences absolues entre les temps mesurés par expérience et les temps mesurés en simulation, comme dans l'expression ci-dessus. Comme le modèle est stochastique, cette valeur est définie dans le workflow comme la médiane de plusieurs réplications du modèle avec les mêmes valeurs de paramètres. L'algorithme NSGA2 va chercher à minimiser cette valeur.
+
+Le paramètre `reevaluate` est utile lorsque le modèle est stochastique. Par chance, il se peut qu'une simulation ou un ensemble de réplications donne un résultat très bon mais peu reproductible. On préfère garder les individus qui donnent de bons résultats en moyenne. Lorsqu'un individu est très bon, il a une plus grande chance d'être sélectionné pour être réévalué. Si sa performance était un coup de chance, il est probable qu'une nouvelle évaluation donne un moins bonne performance, et donc que l'individu soit abandonné au profit d'autres individus plus robustes.
+
+Enfin, il faut répondre au troisième point et décrire comment les calculs sont distribués. Il y a plusieurs approches possibles dans OpenMOLE: générationnelle, steady state et en steady state en îlots.
+
+La première consiste à générer λ individus à chaque génération et à tous les évaluer en distribuant leurs évaluations sur les différentes unités de calcul disponibles. Pour continuer l'étape suivante, il faut attendre que tous les individus aient été évalués. Si certains prennent plus de temps que d'autres, on peut se retrouver dans des cas où on doit attendre que les plus long se terminent avant de continuer, alors que la plupart des unités de calcul sont inoccupées. C'est une perte de temps de calcul.
+
+La seconde approche consiste à commencer avec μ individus et à en lancer au maximum autant qu'il y a d'unités de calcul disponible. Dès qu'une évaluation se termine, on l'intègre à la population et on en génère un nouveau que l'on relance immédiatement sur l'unité de calcul qui vient de se libérer. Cette méthode utilise continuellement les unités de calculs. C'est l'approche recommandée pour lancer une évolution sur un cluster.
+
+La troisième approche, island steady state, convient particulièrement au calcul sur grille où l'accès aux noeuds de calculs à un coût important (par exemple à cause du temps d'attente pour qu'un noeud se libère). Au lieu de lancer seulement l'évaluation des individus sur les unités de calcul distribuées, elle consiste à lancer des algorithmes évolutifs entiers pour une période de temps fixé (par exemple, 1h). Lorsqu'une évolution se termine, sa population finale est intégrée à la population globale, puis une nouvelle population est générée et sert de population de départ à une nouvelle évolution distribuée.
+
+Pour notre exemple, voyons comment utiliser l'approche steady state simple:
+
+    val (puzzle, ga) = SteadyGA(evolution)(replicateModel, 40)
+
+On passe à `SteadyGA` la méthode d'évolution que l'on a décrite plus haut, et la tâche à exécuter. Le dernier paramètre correspond au nombre d'évaluations qui sont exécutées en parallèle. SteadyGA lance de nouvelles évaluations tant que le nombre d'évaluations en cours d'exécution est inférieur à cet entier.
+
+`SteadyGA` renvoi deux variables que l'on a appelé dans cet exemple `puzzle` et `ga`. Le second contient les informations sur l'évolution en cours. Elle permet de définir des hooks pour enregistrer la population en cours dans des fichiers csv ou d'afficher la génération en cours. La ligne suivante enregistre la population correspondant à chaque génération dans un fichier `results/population#.csv`, ou `#` est replacé par le numéro de la génération:
+
+    val savePopulationHook = SavePopulationHook(ga, workDirectory / "results")
+
+La ligne suivante affiche dans la console le numéro de la génération:
+
+    val display = DisplayHook("Generation ${" + ga.generation.name + "}")
+
+Dans OpenMOLE, un puzzle est un ensemble de tâches et de transitions qui décrivent un morceau de workflow. La variable `puzzle` contient le puzzle OpenMOLE qui déroule l'évolution. On utilise cette variable pour construire le puzzle final qui va être exécuté, et qui contient les hooks que l'on vient de définir:
+
+    (puzzle hook savePopulationHook hook display)
+
+Lorsqu'on lance le workflow OpenMOLE, l'évolution va progressivement produire les valeurs de paramètres avec lesquelles le modèle reproduit les mesures expérimentales. Voici l'évolution de la distance entre les simulations et les mesures expérimentales au fil des évaluations successives.
+
+![](ants_calibrate/fitnessVSEval.png) 
+
+Lorsque l'évolution se stabilise, on peut conclure que l'on a trouvé ou non des valeurs de paramètres avec lesquelles le modèle reproduit les données, et si oui, on peut conclure que le modèle est une explication possible du phénomène observé.
+
+|  diffusion|  evaporation|  foodDifference|
+|----------:|------------:|---------------:|
+|      99.00|         5.37|           53.00|
+|      45.19|         8.12|           40.50|
+|      27.84|         8.77|           36.00|
+|      66.19|         6.74|           56.50|
+|      99.00|         5.49|           55.50|
+|      64.42|         5.60|           57.50|
+|      71.17|         5.61|           15.50|
+|      68.10|         5.18|           49.00|
+|      78.39|         5.59|           37.00|
+|      78.39|         5.57|           57.00|
+|      59.09|         3.72|           49.00|
+|      51.71|         7.23|           58.50|
+|      66.60|         5.26|           52.50|
+|      21.36|         8.87|           65.50|
+|      64.42|         5.60|           53.50|
+|      92.45|         5.30|           58.50|
+|      47.85|         6.98|           59.00|
+|      68.10|         5.42|           58.50|
+|      44.72|         7.09|           60.00|
+|      79.39|         5.60|           59.50|
+
 
 Validation: Putting a model to the test
 ----------------------------------------
@@ -79,7 +173,7 @@ Sensitivity analysis: Profiles
 
 The method we now present aims at understanding better how the model works in focusing on the impact of the different parameters of the model. In our Anthills example, we previously calibrated the model to enforce it to reproduce fake experimental measurements. We would like to know whether the model can reproduce this pattern for other parameter values. It is possible for instance, that a parameter is crucial and yet the model cannot reproduce the experimental measurements for a different value other than the one found with the calibration. It is also possible, on the contrary, that another parameter is not essential at all, that is, the model can reproduce the experimental measurements whatever its value. To establish the relevancy of our model parameter, we will set the parameters profiles for the model and for the targeted pattern, as follows:
 
-We first establish the profil of the evaporation parameter. Here is the method: We would like to know whether the model can reproduce the targeted pattern for different evaporation rates. We divide the parameter interval into `nX` intervals of the same size, and we apply a genetic algorithm to search values for other parameters (the ants model only takes 2 parameters, so that the dispersal parameter is the only one to be varied), which, as previously for the calibration, minimize the distance between the measurements produced by the model and the ones observed experimentally. In the calibration case, we kept the best individals of the population whatever their parameter values. This time, we still keep the best individuals but we now guarantee to keep at least one for each interval division of the profiled parameter, that is the evaporation parameter. Then, we do the same operation with the dispersal parameter.
+We first establish the profile of the evaporation parameter. Here is the method: We would like to know whether the model can reproduce the targeted pattern for different evaporation rates. We divide the parameter interval into `nX` intervals of the same size, and we apply a genetic algorithm to search values for other parameters (the ants model only takes 2 parameters, so that the dispersal parameter is the only one to be varied), which, as previously for the calibration, minimize the distance between the measurements produced by the model and the ones observed experimentally. In the calibration case, we kept the best individuals of the population whatever their parameter values. This time, we still keep the best individuals but we now guarantee to keep at least one for each interval division of the profiled parameter, that is the evaporation parameter. Then, we do the same operation with the dispersal parameter.
 
 To set a profile for a given parameter in OpenMOLE, the GenomeProfile evolutionary method is used:
 
