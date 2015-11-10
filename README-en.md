@@ -64,7 +64,7 @@ Why not simply sample the parameter space in order to know the different potenti
 
 <img src="img/flockingpatternsallmethods.png" width="600" />
 
-Each point represents a discovered behavior of the model. The behaviors are described in two dimensions: the averange velocity of the particles and ther relative diffusion (towards 1, they move away from each other, at 0, they do not move relatively to each other, towards -1, they get closer to each other).
+Each point represents a discovered behavior of the model. The behaviors are described in two dimensions: the averange velocity of the particles and their relative diffusion (towards 1, they move away from each other, at 0, they do not move relatively to each other, towards -1, they get closer to each other).
 
 The following figure allows to compare PSE to other sampling methods in terms of efficiency.
 
