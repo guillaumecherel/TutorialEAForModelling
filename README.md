@@ -38,7 +38,7 @@ de la dernière ligne ci-dessus, utilisez:
 
     $ stack ghci
 
-L'interpréteur haskell est lancé est il vous est possible d'appeler directement
+L'interpréteur haskell est lancé et il vous est possible d'appeler directement
 des fonctions comme `plot_ants_calibrate`. Référez-vous au fichier
 <analyses/analyses.hs> pour connaître les fonctions disponibles.
 
