@@ -107,10 +107,9 @@ compréhension du phénomène et construire des modèles en lesquels on peut avo
 de plus en plus confiance.
 
 Rechercher les différents comportements possibles d'un modèle n'est pas un
-problème d'optimisation puisqu'on ne cherche pas un comportement particulier. On
-cherche les différents comportements possibles d'un modèle. Les algorithmes
-évolutifs peuvent aussi nous permettre d'aborder ce problème en suivant
-l'approche de la [recherche de
+problème d'optimisation puisqu'on ne cherche pas un comportement particulier.
+Les algorithmes évolutifs peuvent aussi nous permettre d'aborder ce problème en
+suivant l'approche de la [recherche de
 nouveauté](http://eplex.cs.ucf.edu/noveltysearch/userspage/), comme nous
 l'expliquerons plus bas.
 
