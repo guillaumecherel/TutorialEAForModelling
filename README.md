@@ -64,8 +64,10 @@ suivante:
 Une fois que cette proposition d'explication est faite, la difficulté est de la
 tester et de la mettre à l'épreuve pour qu'elle ait une valeur scientifique. Ces
 règles peuvent être implémentées sous forme algorithmique, ce qui donne un
-modèle qui peut être simulé. Nous utiliserons une version modifiée du modèle
-NetLogo *ants*.
+modèle qui peut être simulé. Nous utiliserons une version modèle NetLogo *ants*
+modifiée pour l'utilisation avec OpenMOLE qui inclut des variables de sorties
+supplémentaires. Le modèle modifié est disponible dans le fichier
+[ants.nlogo](ants.nlogo).
 
 ![](img/ants_screenshot.png) 
 
