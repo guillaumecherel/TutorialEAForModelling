@@ -22,8 +22,8 @@ méthodes. Référez-vous à la [documentation OpenMOLE](http://www.openmole.org
 pour l'utilisation de ces scripts.
 
 L'analyse de données et la production des figures est faite en Haskell. Le
-fichier <analyses/analyses.hs> contient les fonctions commentées qui
-réalisent les analyses. Le répertoire <analyse> prend la forme d'un projet
+fichier [analyses/analyses.hs](analyses/analyses.hs) contient les fonctions commentées qui
+réalisent les analyses. Le répertoire [analyses](analyses) prend la forme d'un projet
 [Stack](http://www.stackage.org/) qui se charge de l'installation de toutes les
 dépendances requises. Pour l'utiliser, installez stack puis exécutez les
 commandes suivantes:
