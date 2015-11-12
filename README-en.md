@@ -4,7 +4,150 @@ Guillaume Chérel, 2015-10-23
 
 Translated from french by Guillaume Chérel, Mathieu Leclaire, Juste Raimbault, Julien Perret.
 
+Complex systems models are difficult to explore in simulation because of they
+can involve many paramters, be non linear and stochastic. We need to find way to
+solve important modeling problems, like calibration, sensitivity analysis and
+validation. In this tutorial, we will see how evolutionary algorithms can help
+us solve these problems for complex systems models, and how to use them in
+OpenMOLE.
 
+Script files accompanying this documents
+----------------------------------------
+
+This document is part of a git repository which also contains the OpenMOLE
+script files to execute the experiments presented below, and a Haskell source
+file to perform the simulation results analysis and plotting. A link to the
+corresponding OpenMOLE script is given below each section title. Please refer to
+the [OpenMOLE documentation](http://www.openmole.org/) for directions on how to
+use these scripts.
+
+Data analysis and plotting was done with Haskell. The file
+[analyses/analyses.hs](analyses/analyses.hs) contains commented functions
+realizing the analyses. The directory [analyses](analyses) is formatted as a
+[Stack](http://www.stackage.org/) project which deals with the necessary
+dependencies. To use it, install stack and run:
+
+    $ cd analyses #move into the directory
+    $ stack setup #let stack install the right ghc version
+    $ stack build #compile the project and install the dependencies
+    $ stack exec EAForModelling #generate the figures
+
+You can also generate the figures interactively with ghci. Instead of the last
+command, use:
+
+    $ stack ghci
+
+This starts the haskell interpreter and you can call functions defined in
+analyses.hs directly, such as `plot_ants_calibrate`, `plot_ants_pse` and
+`plot_ants_profiles`.
+
+The modeling problem we are trying to address
+---------------------------------------------
+
+We are in the context of writing a model to explain and observed phenomenon. For
+example, we would like to explain the formation of ant lines between the nest
+and a food source. We propose the following explanation:
+
+- in general, ants move randomly,
+- when they find food, they pick some up and go back to the nest,
+- on their way back, they drop pheromones,
+- when ants detect pheromones around them, they move toward it,
+- pheromones evaporate at a given rate (parameter),
+- when pheromones are droped by an ant, they diffuse with a certain diffusion
+  rate (parameter).
+
+Once this explanation is proposed, the difficulty is to test it and give it some
+scientific value. These rules can be implemented algorithmically, which yields a
+model that can be simulated. We will use a version of the NetLogo model *ants*
+modified to include additional output variables. It is available in the file
+[ants.nlogo](ants.nlogo).
+
+![](img/ants_screenshot.png) 
+
+The first thing to verify is that the model is able to reproduce the phenomena
+it was designed to explain. We are thus looking for parameter values with which
+the model in simulation reproduces the phenomena. This is the problem of
+**inverse calibration**. It can be translated into an optimisation problem:
+find the parameter values which minimise the distance between experimental
+measurements or field data and the simulation results. Evolutionary algorithms
+were first designed as optimisation methods and can be used to find solutions to
+this kind of problems.
+
+To know that a model can reproduce and observed phenomena does not entail that
+it represents how the phenomena is actually produced in nature. Other
+explanations could be possible. The proposed model is but one candidate among
+several possibilities. It is probably out of reach to be certain that it is the
+right one, and there can be more than one valid interpretation of the same
+phenomena. But we can attempt to test its validity. This is the problem of model
+**validation**.
+
+One way to test the model is to look for its different possible behaviours,
+that is, not only those we expect to reproduce, but also the unexpected ones. By
+looking for the unexpected behaviours, we get a chance to find some which are
+not acceptable, for example because they are in disagreement with empirical
+data. We also get a chance to notice that some kinds of behaviours are absent,
+and to interpret this as the inability of the model to generate them. These
+observations, if they are contradicted by empirical observation, gives us the
+opportunity to revise the model assumptions or find bugs in the code. They also
+give us the opportunity to express new hypotheses to be tested empirically. By
+reiterating this process of observation of the simulated model, hypotheses
+formulation, empirical testing of these hypotheses, and model revision in
+accordance with the new observations, we can enhance our understanding of the
+phenomena and increase our confidence in the models we build.
+
+To look for the different possible behaviours a model can exhibit is not an
+optimisation problem, since we are not looking for one behaviour in particular.
+Evolutionary algorithms can also help us address this problem by following the
+approach of [Novelty Search](http://eplex.cs.ucf.edu/noveltysearch/userspage/),
+as we will explain below.
+
+A third important modelling problem is sensitivity analysis. It is about
+understanding how the different model parameters contribute to its behaviour.
+Below, we will propose an approach to sensitivity analysis which leads to
+visualising the contribution of each parameter in the reproduction of a target
+behaviour. This is the **profiles** method. We will then propose another
+approach to evaluate a **calibration's robustness*, i.e. to know if small
+variations of the parameters around calibrated values can lead to important
+changes in the model behaviour.
+
+Evolutionary algorithms
+-----------------------
+
+Evolutionary algorithms are originally optimisation methods which were inspired
+by evolution and natural selection. The general principle is to generate
+iteratively new populations of individuals from the previous population, as
+follows:
+
+1. Generate new individuals by crossover and mutation of the individuals of the
+   previous population,
+2. Evaluate the new individuals,
+3. Select the individuals to keep in the new population.
+
+From this general framework, we can look for the best solutions to a given
+problem by selecting at each generation the individuals that are the best at
+solving it. We can also look for diversity by selecting individuals which have
+the most different behaviours from one another.
+
+Using evolutionary algorithms with models
+-----------------------------------------
+
+In the setting of complex systems modeling, we are looking for parameter values
+depending on the behaviour they induce in the model. The individuals are thus
+composed first of a genome which gives a value for each model parameter. 
+Evaluating an individual means executing a model simulation with the parameter
+values in the genome and performing desired measures on the model output. The
+set of values measured constitute what we will call here a pattern. Each
+simulation thus generates a pattern. When the model is stochastic, we can take
+the average or median pattern of several simulation replications with the same
+parameter values. In the end, an individual is constituted by the genome and the
+associated pattern.
+
+In order to solve the modeling problems mentionned above, we will use the
+evolutionary algorithms with different objectives:
+
+- the objective of looking for patterns which are the closest to a pattern observed or
+  measured experimentally,
+- the objective of looking for different patterns.
 
 Calibrate a model to reproduce expected patterns
 ------------------------------------------------------
@@ -409,7 +552,7 @@ considerable way.
 
 ![](img/ants_evaporation_15.png) 
 
-Sensitivity analysis: Robustness of a calibration
+Sensitivity analysis: Calibration's robustness
 -------------------------------------------------
 
 The last method presented here aims to evaluate the robustness of a model
