@@ -121,8 +121,8 @@ plotPatterns file d = renderableToFile (FileOptions (400,400) PNG) file $ toRend
         limits = PlotHidden {_plot_hidden_x_values = [-0.0,2000.0]
                             ,_plot_hidden_y_values = [-0.0,2000.0]}
         layout = layout_title .~ "Patterns"
-               $ layout_x_axis . laxis_title .~ "temps pour consommer la source 1"
-               $ layout_y_axis . laxis_title .~ "temps pour consommer la source 3"
+               $ layout_x_axis . laxis_title .~ "consumption time source 1"
+               $ layout_y_axis . laxis_title .~ "consumption time source 3"
                $ layout_plots .~ [toPlot patternsPlot, toPlot limits]
                -- $ layout_x_axis . laxis_generate .~ scaledAxis def (-0.1, 1.1)
                -- $ layout_y_axis . laxis_generate .~ scaledAxis def (-0.1, 1.1)
@@ -136,10 +136,12 @@ plotPatterns file d = renderableToFile (FileOptions (400,400) PNG) file $ toRend
 -- Plot the volume discovered by PSE as a function of the number of evaluations
 
 plotVolumeDiscovered :: FilePath -> [(Int, Int)] -> IO ()
-plotVolumeDiscovered file vd = toFile (FileOptions (400,200) PNG) file $ do
+plotVolumeDiscovered file vd = toFile (FileOptions (500,300) PNG) file $ do
     layout_title .= "PSE"
-    (layout_x_axis . laxis_title) .= "évaluations"
-    (layout_y_axis . laxis_title) .= "nombre de motifs découverts"
+    -- (layout_x_axis . laxis_title) .= "évaluations"
+    -- (layout_y_axis . laxis_title) .= "nombre de motifs découverts"
+    (layout_x_axis . laxis_title) .= "evaluations"
+    (layout_y_axis . laxis_title) .= "number of patterns discovered"
     setColors [opaque blue]
     plot (line "" [vd])
 
@@ -147,10 +149,10 @@ plotVolumeDiscovered file vd = toFile (FileOptions (400,200) PNG) file $ do
 -- of the number of evaluations.
 
 plotFitnessVSEvaluations :: FilePath -> (Double, Double)-> [(Int, Double)] -> IO ()
-plotFitnessVSEvaluations file (ymin,ymax) vd = toFile (FileOptions (400,200) PNG) file $ do
+plotFitnessVSEvaluations file (ymin,ymax) vd = toFile (FileOptions (500,300) PNG) file $ do
     layout_title .= "Calibration"
-    (layout_x_axis . laxis_title) .= "évaluations"
-    (layout_y_axis . laxis_title) .= "distance experience/simulation"
+    (layout_x_axis . laxis_title) .= "evaluations"
+    (layout_y_axis . laxis_title) .= "distance between experiment and simulation"
     setColors [opaque blue]
     plot (points "" (filter (\(e,f) -> (f <= ymax) && (f >= ymin)) vd))
 
@@ -160,7 +162,8 @@ plotProfile :: String -> FilePath -> (Double, Double) -> (Double, Double) -> [(D
 plotProfile parname file (xmin, xmax) (ymin, ymax) xy = toFile (FileOptions (500,300) PNG) file $ do
     layout_title .= "Profile " ++ parname
     (layout_x_axis . laxis_title) .= parname
-    (layout_y_axis . laxis_title) .= "distance experience/simulation"
+    (layout_y_axis . laxis_title) .= "distance between experiment and simulation"
+    -- (layout_y_axis . laxis_title) .= "distance experience/simulation"
     setColors [opaque blue]
     plot (points "" (filter (\(x,y) -> (x >= xmin && x <= xmax && y >= ymin && y <= ymax)) xy))
     setColors [transparent]
