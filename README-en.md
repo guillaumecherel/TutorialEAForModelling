@@ -6,26 +6,26 @@ Guillaume Chérel, 2015-10-23
 
 Translated from french by Guillaume Chérel, Mathieu Leclaire, Juste Raimbault, Julien Perret.
 
-Complex systems models are difficult to explore in simulation because of they
-can involve many paramters, be non linear and stochastic. We need to find way to
-solve important modeling problems, like calibration, sensitivity analysis and
+Complex systems models are difficult to explore through simulation because they
+can involve many parameters, stochasticity, and nonlinear behaviors. We need to find ways to
+solve important modeling problems, including calibration, sensitivity analysis, and
 validation. In this tutorial, we will see how evolutionary algorithms can help
 us solve these problems for complex systems models, and how to use them in
 OpenMOLE.
 
-Script files accompanying this documents
+Script files accompanying this document
 ----------------------------------------
 
 This document is part of a git repository which also contains the OpenMOLE
-script files to execute the experiments presented below, and a Haskell source
+script files to execute the experiments presented below, as well as a Haskell source
 file to perform the simulation results analysis and plotting. A link to the
-corresponding OpenMOLE script is given below each section title. Please refer to
+corresponding OpenMOLE script is given below in each section title. Please refer to
 the [OpenMOLE documentation](http://www.openmole.org/) for directions on how to
 use these scripts.
 
-Data analysis and plotting was done with Haskell. The file
+Data analysis and plotting is done with Haskell. The file
 [analyses/analyses.hs](analyses/analyses.hs) contains commented functions
-realizing the analyses. The directory [analyses](analyses) is formatted as a
+for carrying out the analysis. The directory [analyses](analyses) is formatted as a
 [Stack](http://www.stackage.org/) project which deals with the necessary
 dependencies. To use it, install stack and run:
 
@@ -34,7 +34,7 @@ dependencies. To use it, install stack and run:
     $ stack build #compile the project and install the dependencies
     $ stack exec EAForModelling #generate the figures
 
-You can also generate the figures interactively with ghci. Instead of the last
+You can also generate the figures interactively with ghci. In place of the last
 command, use:
 
     $ stack ghci
@@ -46,22 +46,22 @@ analyses.hs directly, such as `plot_ants_calibrate`, `plot_ants_pse` and
 The modeling problem we are trying to address
 ---------------------------------------------
 
-We are in the context of writing a model to explain and observed phenomenon. For
-example, we would like to explain the formation of ant lines between the nest
-and a food source. We propose the following explanation:
+We are in the context of writing a model to explain an observed phenomenon. For
+example, we would like to explain the formation of paths by ants between their nest
+and a food source. We propose the following mechanism:
 
-- in general, ants move randomly,
-- when they find food, they pick some up and go back to the nest,
-- on their way back, they drop pheromones,
-- when ants detect pheromones around them, they move toward it,
-- pheromones evaporate at a given rate (parameter),
-- when pheromones are droped by an ant, they diffuse with a certain diffusion
-  rate (parameter).
+- in general, ants move randomly
+- when ants find food, they pick some up and go back to the nest
+- on their way back, they drop pheromones
+- when an ant detect pheromones around it, it move toward the pheromones
+- pheromones evaporate at a given rate (a parameter of the model)
+- when pheromones are dropped by an ant, they diffuse with a certain diffusion
+  rate (a parameter of the model).
 
-Once this explanation is proposed, the difficulty is to test it and give it some
-scientific value. These rules can be implemented algorithmically, which yields a
-model that can be simulated. We will use a version of the NetLogo model *ants*
-modified to include additional output variables. It is available in the file
+Once this mechanism is proposed, the challenge is to test it and assess its
+explanatory or scientific value. These rules can be implemented algorithmically, 
+which yields a model that can be simulated. We will use a version of the NetLogo 
+model *ants* modified to include additional output variables. It is available in the file
 [ants.nlogo](ants.nlogo).
 
 ![](img/ants_screenshot.png) 
@@ -75,21 +75,21 @@ measurements or field data and the simulation results. Evolutionary algorithms
 were first designed as optimisation methods and can be used to find solutions to
 this kind of problems.
 
-To know that a model can reproduce and observed phenomena does not entail that
-it represents how the phenomena is actually produced in nature. Other
+To know that a model can reproduce an observed phenomenon does not entail that
+it represents how the phenomenon is actually produced in nature. Other
 explanations could be possible. The proposed model is but one candidate among
 several possibilities. It is probably out of reach to be certain that it is the
 right one, and there can be more than one valid interpretation of the same
 phenomena. But we can attempt to test its validity. This is the problem of model
 **validation**.
 
-One way to test the model is to look for its different possible behaviours,
+One way to test the model is to look for its different possible behaviors,
 that is, not only those we expect to reproduce, but also the unexpected ones. By
-looking for the unexpected behaviours, we get a chance to find some which are
+looking for the unexpected behaviors, we get a chance to find some which are
 not acceptable, for example because they are in disagreement with empirical
-data. We also get a chance to notice that some kinds of behaviours are absent,
+data. We also get a chance to notice that some kinds of behaviors are absent,
 and to interpret this as the inability of the model to generate them. These
-observations, if they are contradicted by empirical observation, gives us the
+observations, if they are contradicted by empirical observations, give us the
 opportunity to revise the model assumptions or find bugs in the code. They also
 give us the opportunity to express new hypotheses to be tested empirically. By
 reiterating this process of observation of the simulated model, hypotheses
@@ -103,9 +103,9 @@ Evolutionary algorithms can also help us address this problem by following the
 approach of [Novelty Search](http://eplex.cs.ucf.edu/noveltysearch/userspage/),
 as we will explain below.
 
-A third important modelling problem is sensitivity analysis. It is about
-understanding how the different model parameters contribute to its behaviour.
-Below, we will propose an approach to sensitivity analysis which leads to
+A third important modelling problem is sensitivity analysis. It deals with
+understanding how the different model parameters contribute to the behaviour of 
+the system. Below, we will propose an approach to sensitivity analysis which leads to
 visualising the contribution of each parameter in the reproduction of a target
 behaviour. This is the **profiles** method. We will then propose another
 approach to evaluate a **calibration's robustness*, i.e. to know if small
