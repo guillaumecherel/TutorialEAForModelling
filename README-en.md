@@ -324,23 +324,23 @@ Validation: Putting a model to the test
 
 *Associated Article: Chérel G., Cottineau C., Reuillon R., 2015, " Beyond Corroboration: Strengthening Model Validation by Looking for Unexpected Patterns ", PLoS ONE 10(9): e0138212. doi:[10.1371/journal.pone.0138212](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0138212)*
 
-As stated before, knowing that a model can reproduce an observed phenomenon does
+As stated above, knowing that a model can reproduce an observed phenomenon does
 not ensure its validity, that is to say that we can trust it to explain the
 phenomenon in other experimental conditions and that its predictions are valid
-for other parameter values. We already established that a way to put a model to
-the test was to search for the different behaviours it can exhibit. The discovery
-of unexpected behaviours, if they disagree with the experiment or the direct
+with other parameter values. We have already established that one way to test a model 
+is to search for the variety of behaviours it can exhibit. The discovery
+of unexpected behaviours, if they disagree with the experimental data or the direct
 observation of the system it represents, provides us with the opportunity to
-revise the assumptions of the model or to correct bugs in the code. It also
+revise the assumptions of the model or to correct bugs in the code. This principle also
 holds for the absence of expected pattern discovery, which reveals the
-incapability of the model to produce such patterns. As we test a model and as we
-revise it, we can obtain a model we can trust more to explain and predict a
+inability of the model to produce such patterns. As we test a model and as we
+revise it, we can move toward a model we can trust to explain and predict a
 phenomenon.
 
-One can wonder, for instance, if, according to our ant colony model, the closest
-food source is always exploited before the furthest. We decide to search the
-different patterns that the model generates in terms of time to drain the
-closest and the furthest food sources.
+One might wonder, for instance, if in our ant colony model the closest
+food source is always exploited before the furthest. Accordingly, we decide to compare the
+different patterns that the model generates, looing specifically at the amount time 
+the model requires to drain the closest and the furthest food sources.
 
 As in the previous experiment, we consider a task that runs 10 replications of
 the model with the same given parameter values and that provides, as its output,
@@ -350,30 +350,29 @@ which the furthest food source was exhausted.
 
 To search for diversity, we use the [PSE (Pattern Space
 Exploration)](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0138212)
-method. As all evolutionary algorithms, PSE generates new individuals by
-combination of parent individuals and mutation.The specificity of PSE (inspired
+method. As with all evolutionary algorithms, PSE generates new individuals through a
+combination of genetic inheritance from parent individuals and mutation. PSE (inspired
 by the [novelty search
-method](http://eplex.cs.ucf.edu/noveltysearch/userspage/)) is to select the
-parents which patterns are rare compared to the rest of the population and to
+method](http://eplex.cs.ucf.edu/noveltysearch/userspage/)) selects for the
+parents whose patterns are rare compared to the rest of the population and to
 the previous generations. In order to evaluate the rarity of a pattern, PSE
-discretises the pattern space, which divides this space into cells. Each time a
+discretises the pattern space, dividing this space into cells. Each time a
 simulation produces a pattern, a counter is incremented in the corresponding
-cell. PSE preferentially selects the parents whose associated cell has a low
-counter. By selecting the parents with rare patterns, we have a better chance to
-produce new individuals with behaviours never observed before.
+cell. PSE preferentially selects the parents whose associated cells have low
+counters. By selecting parents with rare patterns, we have a better chance to
+produce new individuals with previously unobserved behaviours.
 
-In order to use PSE in OpenMOLE, the only thing to modify, compared to the
-calibration we saw in the previous section, is the evolution method. We need to
-provide the following parameters:
+In order to use PSE in OpenMOLE, the calibration utilised in the previous section
+is merely run with a different evolution method. We need to provide the following parameters:
 
 - inputs: the model parameters with their minimum and maximum bounds,
-- observables: the observables measured for each simulation and for which we
+- observables: the observables measured for each simulation and within which we
   search for diversity,
 - gridSize: the discretisation step for each observable,
 - reevaluate and termination have the same meaning as in the calibration
   example.
 
-Here is the OpenMOLE code used for out entomological example:
+The following is the OpenMOLE code used for our entomological example:
 
     val evolution =
         BehaviourSearch (
@@ -390,18 +389,18 @@ Here is the OpenMOLE code used for out entomological example:
           termination = 1000000
         )
 
-As the exploration progresses new patterns are discovered. The following figure
+As the exploration progresses, new patterns are discovered. The following figure
 gives the number of known patterns (the number of cells with a counter value
 greater than 0) with respect to the number of evaluations.
 
 ![](ants_pse/volumeDiscovered.png) 
 
-When this number stabilises, PSE does not make new discoveries anymore. One has
-to be careful when interpreting this. Indeed, the absence of new discoveries can
+When this number stabilises, PSE is no longer making new discoveries. One has
+to be careful when interpreting this. The absence of new discoveries can
 mean that all the patterns that the model can produce have been discovered, but
-it is also possible that other patterns exist but that PSE could not reach them.
+it is possible that other patterns exist but that PSE could not reach them.
 
-The following figure shows the patterns discovered by PSE when we interrupted
+The following figure shows the patterns discovered by PSE when we interrupt
 the exploration.
 
 ![](ants_pse/patterns.png) 
