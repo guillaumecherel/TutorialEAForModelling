@@ -7,8 +7,8 @@ Guillaume Chérel, 2015-10-23
 Translated from french by Guillaume Chérel, Mathieu Leclaire, Juste Raimbault, Julien Perret.
 
 Complex systems models are difficult to explore through simulation because they
-can involve many parameters, stochasticity, and nonlinear behaviors. We need to find ways to
-solve important modeling problems, including calibration, sensitivity analysis, and
+can involve many parameters, stochasticity, and nonlinear behaviours. We need to find ways to
+solve important modelling problems, including calibration, sensitivity analysis, and
 validation. In this tutorial, we will see how evolutionary algorithms can help
 us solve these problems for complex systems models, and how to use them in
 OpenMOLE.
@@ -43,10 +43,10 @@ This starts the haskell interpreter and you can call functions defined in
 analyses.hs directly, such as `plot_ants_calibrate`, `plot_ants_pse` and
 `plot_ants_profiles`.
 
-The modeling problem we are trying to address
+The modelling problem we are trying to address
 ---------------------------------------------
 
-We are in the context of writing a model to explain an observed phenomenon. For
+We are developing a model to explain an observed phenomenon. For
 example, we would like to explain the formation of paths by ants between their nest
 and a food source. We propose the following mechanism:
 
@@ -68,38 +68,38 @@ model *ants* modified to include additional output variables. It is available in
 
 The first thing to verify is that the model is able to reproduce the phenomena
 it was designed to explain. We are thus looking for parameter values with which
-the model in simulation reproduces the phenomena. This is the problem of
+the simulation reproduces the phenomena. This is the problem of
 **inverse calibration**. It can be translated into an optimisation problem:
 find the parameter values which minimise the distance between experimental
 measurements or field data and the simulation results. Evolutionary algorithms
 were first designed as optimisation methods and can be used to find solutions to
-this kind of problems.
+these kinds of problems.
 
-To know that a model can reproduce an observed phenomenon does not entail that
-it represents how the phenomenon is actually produced in nature. Other
+Knowing that a model can reproduce an observed phenomenon does not guarantee that
+it represents the way the phenomenon is actually produced in nature. Other
 explanations could be possible. The proposed model is but one candidate among
 several possibilities. It is probably out of reach to be certain that it is the
 right one, and there can be more than one valid interpretation of the same
 phenomena. But we can attempt to test its validity. This is the problem of model
 **validation**.
 
-One way to test the model is to look for its different possible behaviors,
-that is, not only those we expect to reproduce, but also the unexpected ones. By
-looking for the unexpected behaviors, we get a chance to find some which are
-not acceptable, for example because they are in disagreement with empirical
-data. We also get a chance to notice that some kinds of behaviors are absent,
-and to interpret this as the inability of the model to generate them. These
-observations, if they are contradicted by empirical observations, give us the
+One way to test the model is to look for its different possible behaviours;
+that is, not only those we have designed the model to reproduce, but also unexpected ones. By
+looking for unexpected behaviours, we can identify those which are
+not acceptable, for example because they differ from empirical
+data. We also can determine whether certain kinds of behaviours are absent,
+which implies the inability of the model to generate such behaviours. These
+observations of the model, if they contradict empirical observations, give us the
 opportunity to revise the model assumptions or find bugs in the code. They also
 give us the opportunity to express new hypotheses to be tested empirically. By
-reiterating this process of observation of the simulated model, hypotheses
-formulation, empirical testing of these hypotheses, and model revision in
+reiterating this process of observation of the simulated model, the formulation of hypotheses, 
+the empirical testing of these hypotheses, and model revision in
 accordance with the new observations, we can enhance our understanding of the
 phenomena and increase our confidence in the models we build.
 
-To look for the different possible behaviours a model can exhibit is not an
-optimisation problem, since we are not looking for one behaviour in particular.
-Evolutionary algorithms can also help us address this problem by following the
+Identifying the set of distinct behaviours a model can possibly exhibit is not an
+optimisation problem, as we are not looking for any one behaviour in particular.
+Evolutionary algorithms can help us address this problem by following the
 approach of [Novelty Search](http://eplex.cs.ucf.edu/noveltysearch/userspage/),
 as we will explain below.
 
@@ -110,41 +110,40 @@ visualising the contribution of each parameter in the reproduction of a target
 behaviour. This is the **profiles** method. We will then propose another
 approach to evaluate a **calibration's robustness*, i.e. to know if small
 variations of the parameters around calibrated values can lead to important
-changes in the model behaviour.
+changes in the model's behaviour.
 
 Evolutionary algorithms
 -----------------------
 
-Evolutionary algorithms are originally optimisation methods which were inspired
-by evolution and natural selection. The general principle is to generate
-iteratively new populations of individuals from the previous population, as
-follows:
+Evolutionary algorithms are optimisation methods which were originally inspired
+by evolution and natural selection. The general principle is to iteratively generate
+new populations of individuals from the previous population, as follows:
 
-1. Generate new individuals by crossover and mutation of the individuals of the
+1. Generate new individuals by crossover and mutation of the individuals in the
    previous population,
 2. Evaluate the new individuals,
 3. Select the individuals to keep in the new population.
 
 From this general framework, we can look for the best solutions to a given
-problem by selecting at each generation the individuals that are the best at
-solving it. We can also look for diversity by selecting individuals which have
-the most different behaviours from one another.
+problem by selecting from each generation the individuals that are the best at
+solving it. We can also prioritise diversity by selecting individuals whose behaviours 
+vary most from one another.
 
 Using evolutionary algorithms with models
 -----------------------------------------
 
-In the setting of complex systems modeling, we are looking for parameter values
-depending on the behaviour they induce in the model. The individuals are thus
-composed first of a genome which gives a value for each model parameter. 
+In the context of complex systems modelling, we are evaluating parameter values
+based on the behaviour they induce in the model. The individuals are thus
+endowed with a genome which encodes a value for each model parameter. 
 Evaluating an individual means executing a model simulation with the parameter
-values in the genome and performing desired measures on the model output. The
+values in the individual's genome and performing desired measures on the model output. The
 set of values measured constitute what we will call here a pattern. Each
 simulation thus generates a pattern. When the model is stochastic, we can take
 the average or median pattern of several simulation replications with the same
-parameter values. In the end, an individual is constituted by the genome and the
+parameter values. In the end, an individual is comprised of the genome and its
 associated pattern.
 
-In order to solve the modeling problems mentionned above, we will use the
+In order to solve the modelling problems described above, we will use the
 evolutionary algorithms with different objectives:
 
 - the objective of looking for patterns which are the closest to a pattern observed or
@@ -158,45 +157,45 @@ Calibrate a model to reproduce expected patterns
 
 *Corresponding paper: Schmitt C, Rey-Coyrehourcq S, Reuillon R, Pumain D, 2015, "Half a billion simulations: evolutionary algorithms and distributed computing for calibrating the SimpopLocal geographical model" Environment and Planning B: Planning and Design, 42(2), 300-315. <https://hal.archives-ouvertes.fr/hal-01118918/document>*
 
-We will see now how OpenMOLE can help finding parameter values through which a
-model reproduces a given pattern we want to explain.
+We will see now how OpenMOLE can help in finding the parameter values with which a
+model reproduces a given pattern.
 
 Coming back to the ants example, we can imagine a real world experiment where
-three stacks of food are set around the anthill, allowing to measure the time
-needed for each stack to be emptied, respectively 250, 400 and 800 seconds. If
-the model is accurate, it should be able to reproduce these measures. Are we
-able to find some parameter values reproducing these ?
+three stacks of food are set around the anthill, and the experimenter seeks to measure the 
+amount of time required for each stack to be emptied. Assume that the measurements taken from real 
+data are respectively 250, 400, and 800 seconds. If the model is accurate, it should be able to 
+reproduce these measurements. Are we able to find some parameter values which reproducing these values?
 
-This question can be understood as an optimization problem, where we search for
-parameter values minimizing the difference between experimental measured times
+This question can be understood as an optimisation problem, in which we search for the
+parameter values which minimise the difference between experimental measured times
 and simulated times, given by:
 
     |250 - simuFood1| + |400 - simuFood2| + |800 - simuFood3|
 
-To answer this question with OpenMOLE, we need a workflow that describes: 
+To answer this question using OpenMOLE, we need a workflow that describes: 
 
-1. how to simulate the model and compute the distance between simulation and
+1. how to simulate the model and compute the distance between simulated and
    experimental measures, 
-2. how to minimize this distance, 
-3. how to parallelize the computations.
+2. how to minimise this distance, 
+3. how to parallelise the computations.
 
-The first step corresponds to OpenMOLE basics that will not be detailed here. We
-simply assume that we have defined a `replicateModel` task that executes 10
-replications of the model with given parameter values, computes the median
-distance between simulation outputs and experimental measures (following the
-above expression) and associates it to the `foodTimesDifference` prototype.
+The first step corresponds to OpenMOLE basics which will not be detailed here. We
+assume that we have defined a `replicateModel` task that executes 10
+replications of the model with the given parameter values, computes the median
+distance between the simulation outputs and experimental measures (following the
+above expression) and associates it with the `foodTimesDifference` prototype.
 
 The second step is tackled using the NSGA2 algorithm, a multi-criteria
-optimization genetic algorithm implemented in OpenMOLE. It takes the following
+optimisation genetic algorithm implemented in OpenMOLE. It takes the following
 parameters as inputs: 
 
-- mu: a number of individuals to be randomly generated in
-order to initialize the population, 
-- inputs: a sequence of model parameters on
-which the optimization is done, with the associated lower and upper bound,
-- objectives: a sequence of variables to be minimized, 
+- mu: the number of individuals to randomly generate in
+order to initialise the population, 
+- inputs: the set of model parameters and their range of associated values over
+which the optimisation is done,
+- objectives: a sequence of variables to be minimised, 
 - reevaluate: the
-probability to pick a new individual from the existing population in order to
+probability of picking a new individual from the existing population in order to
 reevaluate it, 
 - a termination criterion.
 
@@ -212,85 +211,84 @@ The corresponding OpenMOLE code is the following:
       )
 
 The variable `foodTimesDifference` is a prototype in the OpenMOLE workflow,
-representing the sum of absolute differences between experimental time and
+representing the sum of absolute differences between experimental times and
 simulated times, as given above. As we are dealing with a stochastic model, its
 value is defined in the workflow as the median on some model replications with
-the same parameter values. The NSGA2 algorithm will aim to minimize this value.
+the same parameter values. The NSGA2 algorithm will aim to minimise this value.
 
 The parameter `reevaluate` is useful when we have a stochastic model. By chance,
-a simulation or a set of replications can lead to a satisfying but not
-reproducible result. It is better to keep individuals leading to good average
-results. If an individual has a high fitness, it will have more chance to be
-selected for reevaluation. If its performance was due to luck, it will probably
-produce a mean performance and the individual will be abandoned for more robust
+a simulation or a set of replications can lead to a satisfying but 
+unreproducible result. It is better to keep individuals which produce good average
+results. If an individual has high fitness, it will have a greater chance of being
+selected for reevaluation. If its previous performance was due to luck, it will tend to
+produce less impressive results and the individual will be abandoned in favour of more robust
 individuals.
 
-Finally, we must answer to the third step and describe how computation is
-distributed. OpenMOLE offers several approaches to tackle this question for
-evolutionary algorithms: generational, steady state and island steady state.
+Finally, we must consider how computation is distributed. OpenMOLE offers several 
+approaches to tackle this question for evolutionary algorithms: generational, 
+steady state and island steady state.
 
-The first one resides in generating λ individuals at each generation and to
-evaluate each of them by distributing their evaluation of the different
-available computing units. To continue to next generation, the algorithm must
-wait for all individuals to have been evaluated, what can lead to a significant
-slow-down due to resting computing units waiting for slowest individuals to
-terminate, in case of a string disparity in computation time among individuals.
+The first approach entails generating λ individuals during each generation and
+evaluating each of them by distributing their evaluation across the different
+available computing units. To continue to the next generation, the algorithm must
+wait for all individuals to be evaluated, which can lead to a significant
+slow-down as resting computing units wait for the slowest individuals to
+terminate, in the case of large disparities in computation time among individuals.
 
 The second approach begins with μ individuals and launches a maximal number of
-evaluations as long as there are available computing units. When an evaluation
-is over, it is integrated in the population and a new individual is generated
+evaluations for as long as there are available computing units. When an evaluation
+is completed, it is integrated into the population and a new individual is generated
 and evaluated on the computing unit that has just been freed. This method uses
 all computing units continuously and is recommended in a cluster environment.
 
-The third approach, island steady state, is particularly adapted to grid
-computing for which access to computatino nodes has a consequent entry cost (for
+The third approach, island steady state, is particularly well adapted to grid
+computing for which access to computational nodes has a consequent entry cost (for
 example because of the waiting time for a node to be freed). Instead of
-launching only the evaluation of indivuduals on the distributed computing units,
-it relies on launching entires evolutionary algorithms for a fixed time period
-(for example 1h). When an evolution is over, its final population is integrated
-into the global population, what allows to generate a new population that is a
+evaluating individuals across a set of distributed computing units, it relies on launching
+evolutionary algorithms over a population for a fixed time period (for example 1 hour). 
+When the period of time is over, the final population of the algorithm is integrated
+into the global population, which allows the system to generate a new population as a
 basis for a new distributed evolution.
 
 In our example, we propose to study the simple steady state approach:
 
     val (puzzle, ga) = SteadyGA(evolution)(replicateModel, 40)
 
-We give to `SteadyGA` the evolution method that was described above and the task
+We pass `SteadyGA` the evolution method that was described above and the task
 to be executed. The last parameter corresponds to the number of evaluations
-executed in parallel. `SteadyGA` launches new evaluations as long as current
-evaluations are below this value.
+to be executed in parallel. `SteadyGA` launches new evaluations as long as the 
+number of current evaluations is below this value.
 
-`SteadyGA` returns two variables called in our example `puzzle` and `ga`. The
-second contains informations on the current evolution and allows to define hooks
-that save the current population into csv file or to print the current
+`SteadyGA` returns two variables called, in our example, `puzzle` and `ga`. The
+second contains information about the current evolution and allows for the creation of hooks
+to export the current population into a csv file or to print the current
 generation. The following code saves the population corresponding to each
-generation into a file `results/population#.csv`, where `#` is replaced by the
-number of the generation:
+generation into a file `results/population#.csv`, where `#` is the number of the generation:
 
     val savePopulationHook = SavePopulationHook(ga, workDirectory / "results")
 
-and this line displays in console the generation number:
+This line of code displays the generation number in the console:
 
     val display = DisplayHook("Generation ${" + ga.generation.name + "}")
 
 In OpenMOLE, a puzzle is a set of tasks and transitions that describe a part of
 a workflow. The variable `puzzle` contains the OpenMOLE puzzle that does the
 evolution. We use this variable to construct the final puzzle that will be
-executed and that contains the hooks defined just before:
+executed and that contains the hooks defined above:
 
     (puzzle hook savePopulationHook hook display)
 
-When we launch the OpenMOLE workflow, the evolution will progressively produce
-parameter values having the best fitness, i.e. with which the model is closest
+When we launch the OpenMOLE workflow, the evolution will produce sets of parameter 
+values with increasing fitness, i.e. with which the model output comes closest
 to experimental values. We show the evolution of the distance between simulation
 and experimental measures between successive evaluations in the following
 figure:
 
 ![](ants_calibrate/fitnessVSEval.png) 
 
-When the evolution is stabilized, we can conclude wether we have found parameter
-values with which the model reproduce experimental data. If it is the case, we
-can conclude that the model is a possible explanation to the observed
+When the evolution has stabilised, we can conclude whether we have found parameter
+values with which the model reproduces experimental data. If so, we
+can conclude that the model is a possible explanation of the observed
 phenomenon.
 
 |  diffusion|  evaporation|  foodDifference|
@@ -330,8 +328,8 @@ As stated before, knowing that a model can reproduce an observed phenomenon does
 not ensure its validity, that is to say that we can trust it to explain the
 phenomenon in other experimental conditions and that its predictions are valid
 for other parameter values. We already established that a way to put a model to
-the test was to search for the different behaviors it can exhibit. The discovery
-of unexpected behaviors, if they disagree with the experiment or the direct
+the test was to search for the different behaviours it can exhibit. The discovery
+of unexpected behaviours, if they disagree with the experiment or the direct
 observation of the system it represents, provides us with the opportunity to
 revise the assumptions of the model or to correct bugs in the code. It also
 holds for the absence of expected pattern discovery, which reveals the
@@ -358,11 +356,11 @@ by the [novelty search
 method](http://eplex.cs.ucf.edu/noveltysearch/userspage/)) is to select the
 parents which patterns are rare compared to the rest of the population and to
 the previous generations. In order to evaluate the rarity of a pattern, PSE
-discretizes the pattern space, which divides this space into cells. Each time a
+discretises the pattern space, which divides this space into cells. Each time a
 simulation produces a pattern, a counter is incremented in the corresponding
 cell. PSE preferentially selects the parents whose associated cell has a low
 counter. By selecting the parents with rare patterns, we have a better chance to
-produce new individuals with behaviors never observed before.
+produce new individuals with behaviours never observed before.
 
 In order to use PSE in OpenMOLE, the only thing to modify, compared to the
 calibration we saw in the previous section, is the evolution method. We need to
@@ -371,7 +369,7 @@ provide the following parameters:
 - inputs: the model parameters with their minimum and maximum bounds,
 - observables: the observables measured for each simulation and for which we
   search for diversity,
-- gridSize: the discretization step for each observable,
+- gridSize: the discretisation step for each observable,
 - reevaluate and termination have the same meaning as in the calibration
   example.
 
@@ -398,7 +396,7 @@ greater than 0) with respect to the number of evaluations.
 
 ![](ants_pse/volumeDiscovered.png) 
 
-When this number stabilizes, PSE does not make new discoveries anymore. One has
+When this number stabilises, PSE does not make new discoveries anymore. One has
 to be careful when interpreting this. Indeed, the absence of new discoveries can
 mean that all the patterns that the model can produce have been discovered, but
 it is also possible that other patterns exist but that PSE could not reach them.
@@ -414,30 +412,30 @@ Besides, there seems to be minimum and maximum bounds for the time during which
 the first food source is consumed.
 
 These three observation give us as many starting points for further reflections
-on the collective behavior of ants. For instance, is the exploration of the
+on the collective behaviour of ants. For instance, is the exploration of the
 closest food sources first systematic? Could there be ant species that would
 explore further food sources than others first? If we found such a species, we
 would have to wonder which mechanisms make it possible and revise the model to
 take them into account. This illustrates how the discovery of the different
-behaviors the model is able to produce can lead us to formulate new hypotheses
+behaviours the model is able to produce can lead us to formulate new hypotheses
 of the system under study, to test them and to revise the model, thus enhancing
 our understanding of the phenomenon.
 
 Why not simply sample the parameter space in order to know the different
-potential behaviors of the model using well known sampling methods such as LHS?
+potential behaviours of the model using well known sampling methods such as LHS?
 In the context of an experiment using a collective motion model with 5
 parameters, we compared the performances of PSE and 3 samplings in the parameter
 space: LHS, Sobol and a regular grid. The results presented in the next two
 figures show that the sampling of the parameter space, even with good coverage
 properties such as LHS and Sobol, can miss several patterns. Adaptative methods,
 such as PSE, that orient the search according to the discoveries made along the
-way, are preferable. The following figure shows the behaviors discovered by the
+way, are preferable. The following figure shows the behaviours discovered by the
 proposed method (PSE for Pattern Space Exploration), by a LHS sampling and a
 regular grid.
 
 <img src="img/flockingpatternsallmethods.png" width="600" />
 
-Each point represents a discovered behavior of the model. The behaviors are
+Each point represents a discovered behaviour of the model. The behaviours are
 described in two dimensions: the average velocity of the particles and their
 relative diffusion (towards 1, they move away from each other, at 0, they do not
 move relatively to each other, towards -1, they get closer to each other).
@@ -473,7 +471,7 @@ different evaporation rates. We divide the parameter interval into `nX`
 intervals of the same size, and we apply a genetic algorithm to search values
 for other parameters (the ants model only takes 2 parameters, so that the
 dispersal parameter is the only one to be varied), which, as previously for the
-calibration, minimize the distance between the measurements produced by the
+calibration, minimise the distance between the measurements produced by the
 model and the ones observed experimentally. In the calibration case, we kept the
 best individuals of the population whatever their parameter values. This time,
 we still keep the best individuals but we now guarantee to keep at least one for
@@ -499,10 +497,10 @@ evolutionary method is used:
 
 The arguments `inputs`, `termination`, `objective` and `reevaluate` have the
 same role as in calibration. The argument `objective` is this time not a
-sequence but a single objective to minimize. The argument `x` specifies the
+sequence but a single objective to minimise. The argument `x` specifies the
 index of the parameter to be profiled, i.e. its position within the `inputs`
 sequence , indexing starting at 0. `nX` is as explained before the size of the
-discretization of its range.
+discretisation of its range.
 
 As for any evolutionary method, we need for each profile to create the OpenMOLE
 puzzle to execute it. We define a function returning the puzzle associated to a
@@ -559,18 +557,18 @@ Sensitivity analysis: Calibration's robustness
 
 The last method presented here aims to evaluate the robustness of a model
 calibration. We mean by a robust calibration that small variations of optimal
-parameters do not strongly change model behavior. In other words there should be
+parameters do not strongly change model behaviour. In other words there should be
 no discontinuity in model indicators in a reasonable region around the optimal
 point. As a consequence, if parameter values are restricted to given regions of
-the parameter space, we expect the model to have roughly the same behavior
+the parameter space, we expect the model to have roughly the same behaviour
 within each region, especially within the region around the calibrated point.
 
 Let's suppose for instance, that we can measure the parameter values directly in
 the data. Let's also admit that we can establish a confidence interval for each
 parameter. We want to be sure that, as long as the parameter values remain in
-their respective intervals, the model keep the same behavior. This step is
+their respective intervals, the model keep the same behaviour. This step is
 important when we try to use the model as a predictable model. If the model
-produces behaviors very different in the considered intervals, the parameters
+produces behaviours very different in the considered intervals, the parameters
 responsible for this variation has to be found and has to be measured with more
 accuracy to reduce the confidence interval.
 
@@ -586,7 +584,7 @@ Conclusion
 ----------
 
 The methods developed here are insights into a pattern-oriented of complex
-systems modeling and simulation, in the sense of patterns produced as outputs of
+systems modelling and simulation, in the sense of patterns produced as outputs of
 model simulations. When data on internal mechanisms of a system or causing an
 emerging phenomenon are missing, because they are not directly observable for
 example, they can be formulated into algorithmic interpretations (models of
