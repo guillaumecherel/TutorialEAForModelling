@@ -4,7 +4,7 @@
 
 Guillaume Chérel, 2015-10-23
 
-Translated from french by Guillaume Chérel, Mathieu Leclaire, Juste Raimbault, Julien Perret.
+Translated from French by Guillaume Chérel, Mathieu Leclaire, Juste Raimbault, Julien Perret. Edited by Sarah Wise.
 
 Complex systems models are difficult to explore through simulation because they
 can involve many parameters, stochasticity, and nonlinear behaviours. We need to find ways to
@@ -396,24 +396,24 @@ greater than 0) with respect to the number of evaluations.
 ![](ants_pse/volumeDiscovered.png) 
 
 When this number stabilises, PSE is no longer making new discoveries. One has
-to be careful when interpreting this. The absence of new discoveries can
+to be careful when interpreting this stabilisation. The absence of new discoveries can
 mean that all the patterns that the model can produce have been discovered, but
 it is possible that other patterns exist but that PSE could not reach them.
 
-The following figure shows the patterns discovered by PSE when we interrupt
-the exploration.
+The following figure shows the set of patterns discovered by PSE when we interrupt
+the exploration after it stabilises.
 
 ![](ants_pse/patterns.png) 
 
 The first observation that can be made is that all patterns have indeed been
-discovered: the closest food source has been drained before the furthest one.
-Besides, there seems to be minimum and maximum bounds for the time during which
-the first food source is consumed.
+discovered: in every pattern, the closest food source has been drained before the furthest one.
+Further, there seem to be minimum and maximum bounds on the time period during which
+the nearest food source is consumed.
 
-These three observation give us as many starting points for further reflections
-on the collective behaviour of ants. For instance, is the exploration of the
-closest food sources first systematic? Could there be ant species that would
-explore further food sources than others first? If we found such a species, we
+These observations give us starting points for further reflections
+on the collective behaviour of the ants. For instance, is the exploration of the
+closest food source systematic? Could there be ant species that 
+explore further food sources first? If we found such a species, we
 would have to wonder which mechanisms make it possible and revise the model to
 take them into account. This illustrates how the discovery of the different
 behaviours the model is able to produce can lead us to formulate new hypotheses
@@ -423,13 +423,13 @@ our understanding of the phenomenon.
 Why not simply sample the parameter space in order to know the different
 potential behaviours of the model using well known sampling methods such as LHS?
 In the context of an experiment using a collective motion model with 5
-parameters, we compared the performances of PSE and 3 samplings in the parameter
+parameters, we compared the performances of PSE and 3 sampling techniques as applied to the parameter
 space: LHS, Sobol and a regular grid. The results presented in the next two
 figures show that the sampling of the parameter space, even with good coverage
 properties such as LHS and Sobol, can miss several patterns. Adaptative methods,
 such as PSE, that orient the search according to the discoveries made along the
 way, are preferable. The following figure shows the behaviours discovered by the
-proposed method (PSE for Pattern Space Exploration), by a LHS sampling and a
+proposed method (PSE for Pattern Space Exploration), by a LHS sampling, and by a
 regular grid.
 
 <img src="img/flockingpatternsallmethods.png" width="600" />
@@ -439,7 +439,7 @@ described in two dimensions: the average velocity of the particles and their
 relative diffusion (towards 1, they move away from each other, at 0, they do not
 move relatively to each other, towards -1, they get closer to each other).
 
-The following figure allows to compare PSE to other sampling methods in terms of
+The following figure allows for the comparison of PSE with other sampling methods in terms of
 efficiency.
 
 <img src="img/flockingmethodcomparisonsimple.png" width="350" />
@@ -451,31 +451,29 @@ Sensitivity analysis: Profiles
 
 *Article: Reuillon R., Schmitt C., De Aldama R., Mouret J.-B., 2015, "A New Method to Evaluate Simulation Models: The Calibration Profile (CP) Algorithm", JASSS : Journal of Artificial Societies and Social Simulation, Vol. 18, Issue 1, <http://jasss.soc.surrey.ac.uk/18/1/12.html>*
 
-The method we now present aims at understanding better how the model works in
-focusing on the impact of the different parameters of the model. In our Anthills
-example, we previously calibrated the model to enforce it to reproduce fake
+The method we now present focuses on the impact of the different parameters
+in order to better understand how they contribute to the model overall. In our Anthills
+example, we calibrated the model to reproduce a set of notional
 experimental measurements. We would like to know whether the model can reproduce
-this pattern for other parameter values. It is possible for instance, that a
-parameter is crucial and yet the model cannot reproduce the experimental
-measurements for a different value other than the one found with the
-calibration. It is also possible, on the contrary, that another parameter is not
-essential at all, that is, the model can reproduce the experimental measurements
-whatever its value. To establish the relevancy of our model parameter, we will
-set the parameters profiles for the model and for the targeted pattern, as
-follows:
+this pattern for other parameter values. It may be that the model cannot reproduce the 
+experimental measurements if a crucial parameter is set to a value other than the one found by the
+calibration process. On the other hand, another parameter may prove not to be
+essential at all; that is, the model may be able to reproduce the experimental measurements
+whatever its value. To establish the relevancy of our model parameters, we will
+investigate the parameters' profiles for the model and for the targeted pattern.
 
-We first establish the profile of the evaporation parameter. Here is the method:
-We would like to know whether the model can reproduce the targeted pattern for
+We first establish the profile of the evaporation parameter. Specifically, we would 
+like to know whether the model can reproduce the targeted pattern with
 different evaporation rates. We divide the parameter interval into `nX`
-intervals of the same size, and we apply a genetic algorithm to search values
-for other parameters (the ants model only takes 2 parameters, so that the
-dispersal parameter is the only one to be varied), which, as previously for the
+intervals of the same size, and we apply a genetic algorithm to search for values
+for other the parameters (the ants model only takes 2 parameters, so that the
+dispersal parameter is the only one to be varied), which, as was done previously in the
 calibration, minimise the distance between the measurements produced by the
 model and the ones observed experimentally. In the calibration case, we kept the
 best individuals of the population whatever their parameter values. This time,
-we still keep the best individuals but we now guarantee to keep at least one for
-each interval division of the profiled parameter, that is the evaporation
-parameter. Then, we do the same operation with the dispersal parameter.
+we still keep the best individuals, but we keep at least one individual for
+each interval division of the profiled parameter (in this case, the evaporation
+parameter). Then, we repeat the process with the dispersal parameter.
 
 To set a profile for a given parameter in OpenMOLE, the GenomeProfile
 evolutionary method is used:
@@ -495,15 +493,15 @@ evolutionary method is used:
        )
 
 The arguments `inputs`, `termination`, `objective` and `reevaluate` have the
-same role as in calibration. The argument `objective` is this time not a
+same role as in calibration. The argument `objective` is in this instance not a
 sequence but a single objective to minimise. The argument `x` specifies the
 index of the parameter to be profiled, i.e. its position within the `inputs`
-sequence , indexing starting at 0. `nX` is as explained before the size of the
+sequence , indexing starting at 0. `nX` is, as explained before, the size of the
 discretisation of its range.
 
-As for any evolutionary method, we need for each profile to create the OpenMOLE
-puzzle to execute it. We define a function returning the puzzle associated to a
-given parameter `parameter` and use it to assemble all pieces into a common
+As with any evolutionary method, we need for each profile to create an OpenMOLE
+puzzle in order to execute it. We define a function which returns the puzzle associated with a
+given parameter `parameter` and use it to assemble all of the pieces into a common
 puzzle, as follows :
 
 
@@ -538,14 +536,14 @@ We obtain the following profiles :
 
 ![](ants_profiles/profile_evaporation.png) 
 
-Except for values below 10, the model is able to reproduce rather accurately
-experimental measures for any value of diffusion rate. A refined profile within
-the interval \[0;20\] may be useful to have a more precise idea. Concerning the
-evaporation parameter, model performance is on the contrary strongly sensitive,
+When the diffusion rate is set to any value above 10, the model is able to reproduce 
+experimental measures rather accurately. A refined profile within the interval 
+\[0;20\] may be useful to give a more precise picture of the change in the influence
+of the parameter. Model performance is on the contrary strongly sensitive to the evaporation parameter,
 as values over 10 lead to a strong increase in minimal fit. When running the
-model with a diffusion rate of 21 and evaporation rate of 15, we observe that
-ants are not able to build a pheromone path enough stable between the nest and
-furthest food pile, what increases the time needed to exploit it in a
+model with a diffusion rate of 21 and evaporation rate of 15, we observe that the
+ants are not able to build a sufficiently stable pheromone path between the nest and
+furthest food pile, which increases the time needed to exploit it in a
 considerable way.
 
 
@@ -555,42 +553,42 @@ Sensitivity analysis: Calibration's robustness
 -------------------------------------------------
 
 The last method presented here aims to evaluate the robustness of a model
-calibration. We mean by a robust calibration that small variations of optimal
-parameters do not strongly change model behaviour. In other words there should be
+calibration. By a robust calibration, we mean that small variations of optimal
+parameters do not strongly change model behaviour. In other words, there should be
 no discontinuity in model indicators in a reasonable region around the optimal
 point. As a consequence, if parameter values are restricted to given regions of
 the parameter space, we expect the model to have roughly the same behaviour
 within each region, especially within the region around the calibrated point.
 
-Let's suppose for instance, that we can measure the parameter values directly in
-the data. Let's also admit that we can establish a confidence interval for each
-parameter. We want to be sure that, as long as the parameter values remain in
-their respective intervals, the model keep the same behaviour. This step is
-important when we try to use the model as a predictable model. If the model
-produces behaviours very different in the considered intervals, the parameters
-responsible for this variation has to be found and has to be measured with more
-accuracy to reduce the confidence interval.
+Let's suppose, for instance, that we can measure the parameter values directly in
+the data. Let's also assume that we can establish a confidence interval for each
+parameter. We want to be sure that, as long as the parameter values remain within
+their respective intervals, the model maintains the same behaviour. This assumption is
+important when we try to use the model as a predictive model. If the model
+produces behaviours which vary greatly within the considered intervals, the parameters
+responsible for this variation should be found and measured with more
+accuracy in order to narrow the confidence interval.
 
 This issue can be tackled using the PSE algorithm again, by running the above
 example with the desired confidence intervals for each parameter. The algorithm
 will aim to diversity of outputs within these interval, and the unveiling of
 significantly different patterns will imply that the model is sensitive to some
-parameters within the considered region. One must then either narrow parameters
+parameters within the considered region. One must then either narrow parameter
 bounds again, or stay cautious on conclusions obtained through the calibrated
 model.
 
 Conclusion
 ----------
 
-The methods developed here are insights into a pattern-oriented of complex
-systems modelling and simulation, in the sense of patterns produced as outputs of
-model simulations. When data on internal mechanisms of a system or causing an
-emerging phenomenon are missing, because they are not directly observable for
-example, they can be formulated into algorithmic interpretations (models of
-simulation), which are candidate as explanations of the phenomenon. The method
-we developed here are various ways to verify wether these propositions are able
-to reproduce (regarding given objectives) the phenomenon they aim to explain, to
-test their predictive and explicative capabilities and to analyze the role of
+The methods developed here suggest an approach to complex
+systems modelling and simulation which focuses on the patterns produced as outputs of
+simulation. When data on the internal mechanisms of a system or the processes that give rise to
+emerging phenomenon are missing (e.g. because they are not directly observable),
+they can be formulated into algorithmic interpretations (models of
+simulation), which serve as candidate explanations of the phenomene. The methods
+we present here represent a variety of ways to verify whether these explanations can
+reproduce the phenomena they aim to explain (relative to a set of given objectives), to
+test their predictive and explicative capabilities, and to analyse the role of
 each parameter in their dynamic.
 
 [![http://creativecommons.org/licenses/by-sa/4.0/](license-by-sa.png)](http://creativecommons.org/licenses/by-sa/4.0/)
