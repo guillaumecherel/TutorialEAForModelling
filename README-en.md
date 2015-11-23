@@ -1,6 +1,6 @@
 [Version Française](README-fr.md)
 
-# Calibration, validation et sensitivity analysis of complex systems models with OpenMOLE
+# Calibration, validation and sensitivity analysis of complex systems models with OpenMOLE
 
 Guillaume Chérel, 2015-10-23
 
