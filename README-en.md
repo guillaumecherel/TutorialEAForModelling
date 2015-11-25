@@ -53,7 +53,7 @@ and a food source. We propose the following mechanism:
 - in general, ants move randomly
 - when ants find food, they pick some up and go back to the nest
 - on their way back, they drop pheromones
-- when an ant detect pheromones around it, it move toward the pheromones
+- when an ant detect pheromones around it, it moves toward the pheromones
 - pheromones evaporate at a given rate (a parameter of the model)
 - when pheromones are dropped by an ant, they diffuse with a certain diffusion
   rate (a parameter of the model).
@@ -339,7 +339,7 @@ phenomenon.
 
 One might wonder, for instance, if in our ant colony model the closest
 food source is always exploited before the furthest. Accordingly, we decide to compare the
-different patterns that the model generates, looing specifically at the amount time 
+different patterns that the model generates, looking specifically at the amount time 
 the model requires to drain the closest and the furthest food sources.
 
 As in the previous experiment, we consider a task that runs 10 replications of
@@ -501,7 +501,7 @@ discretisation of its range.
 
 As with any evolutionary method, we need for each profile to create an OpenMOLE
 puzzle in order to execute it. We define a function which returns the puzzle associated with a
-given parameter `parameter` and use it to assemble all of the pieces into a common
+given parameter and use it to assemble all of the pieces into a common
 puzzle, as follows :
 
 
@@ -583,9 +583,9 @@ Conclusion
 The methods developed here suggest an approach to complex
 systems modelling and simulation which focuses on the patterns produced as outputs of
 simulation. When data on the internal mechanisms of a system or the processes that give rise to
-emerging phenomenon are missing (e.g. because they are not directly observable),
-they can be formulated into algorithmic interpretations (models of
-simulation), which serve as candidate explanations of the phenomene. The methods
+an emerging phenomenon are missing (e.g. because they are not directly observable),
+they can be formulated into algorithmic interpretations (models which can be run
+in simulation), which serve as candidate explanations of the phenomena. The methods
 we present here represent a variety of ways to verify whether these explanations can
 reproduce the phenomena they aim to explain (relative to a set of given objectives), to
 test their predictive and explicative capabilities, and to analyse the role of
